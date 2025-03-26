@@ -13,8 +13,8 @@ incdir_deps = []
 # Here are some useful WrapDB packges you might want to need (install and uncomment):
 
 ## Package name: argparse -----
-# argparse_dep = dependency('argparse', required: true)
-# dependencies += argparse_dep
+argparse_dep = dependency('argparse', required: true)
+dependencies += argparse_dep
 
 ## Package name: google_benchmark -----
 # benchmark_dep = dependency('benchmark' , required: true)
