@@ -2,66 +2,49 @@
 
 Solving the Airport Scheduling Problem (ASP) with independent runways.
 
+## TODO
+
+- [x] Instance parser
+- [ ] Feasibility check
+- [ ] Constructive procedure
+- [ ] Local search
+- [ ] Methaheuristic
+
 ## Methaheuristics
 
-Options:
+- [ ] ILS (Iterated Local Search)
+- [ ] GRASP (Greedy Randomized Adaptative Search Procedure)
 
-[] ILS (Iterated Local Search)
-[] GRASP (Greedy Randomized Adaptative Search Procedure)
+## Constructive procedure
 
-## Constructuve procedure
-
-[] Cheapest Insertion
-[] Other
+- [ ] Cheapest Insertion
+- [ ] Other
 
 ## Local search
 
-Options:
+- [ ] VND (Variable Neighborhood Search) [MANDATORY]
+- [ ] RVND (Randomized Variable Neighborhood Search)
 
-[v] VND (Variable Neighborhood Search) [MANDATORY]
-[] RVND (Randomized Variable Neighborhood Search)
+## Getting started
 
-## How to run
+### Prerequisites
 
-### Requirements
+- [Meson Build System](https://mesonbuild.com/)
+- C++ 17
 
-- [Meson Build System]()
-- C++17
+### How to build the project
 
-### Release build
-
-1. Setup:
+1. Setup release and debug builds:
 
 ```
 meson setup build --buildtype=release
-```
-
-2. Compile:
-
-```
-meson compile -C build
-```
-
-3. Run:
-
-From the root directory:
-
-```
-./build/src/asp
-```
-
-### Debug build
-
-1. Setup:
-
-```
 meson setup build_debug --buildtype=debug
 ```
 
-2. Compile:
+2. Compile build:
 
 ```
-meson compile -C build_debug
+meson compile -C <build or build_debug>
 ```
 
 3. Run:
@@ -69,9 +52,8 @@ meson compile -C build_debug
 From the root directory:
 
 ```
-./build_debug/src/asp
+./<build or build_debug>/src/asp <instance file path>
 ```
-
 
 ## How to contribute
 
@@ -79,7 +61,7 @@ From the root directory:
 
 ```git checkout -b <branch-name>```
 
-2. After the implementation of the feature, commit your changes with a [semmantic commit message]():
+2. After the implementation of the feature, commit your changes with a [semmantic commit message](https://www.conventionalcommits.org/en/v1.0.0/):
 
 ```
 git add .
@@ -92,4 +74,4 @@ git commit -m "feat: <changes made>"
 git push origin <branch-made>
 ```
 
-4. In the remote repository, create a pull request.
+4. In the remote repository, create a [pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests).
