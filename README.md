@@ -5,7 +5,7 @@ Solving the Airport Scheduling Problem (ASP) with independent runways.
 ## TODO
 
 - [x] Instance parser
-- [ ] Feasibility check
+- [x] Feasibility check
 - [ ] Constructive procedure
 - [ ] Local search
 - [ ] Methaheuristic
@@ -25,6 +25,12 @@ Solving the Airport Scheduling Problem (ASP) with independent runways.
 - [ ] VND (Variable Neighborhood Search) [MANDATORY]
 - [ ] RVND (Randomized Variable Neighborhood Search)
 
+### Neighborhood
+
+- [ ] INTRA-SWAP: swap two flights in the same runway
+- [ ] INTER-SWAP: swap two flights in different runways
+- [ ] INTER-REINSERTION: reinsert flight in a different runway
+
 ## Feasible solution
 
 - All permutations of aircrafts in a runway are feasible, as long as each flight is unique;
@@ -32,11 +38,13 @@ Solving the Airport Scheduling Problem (ASP) with independent runways.
 
 ## Aircraft sequencing
 
-- All permutations of aircrafts in a runway are valid.
-- Given a permutation of aircrafts in a runway:
+- All permutations of flights in a runway are valid.
+- Given a permutation of flights in a runway:
 
-    - The delay of the first aircraft is always zero;
+    - The delay of the first flight is always zero;
     - Additional waiting time can cause problems;
+
+- When inserting a flight into a permutation, it cannot cause additional delays to the previous flights, so you don't need to iterate over them to update the objective;
 
 ## Getting started
 
