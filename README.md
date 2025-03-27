@@ -25,6 +25,19 @@ Solving the Airport Scheduling Problem (ASP) with independent runways.
 - [ ] VND (Variable Neighborhood Search) [MANDATORY]
 - [ ] RVND (Randomized Variable Neighborhood Search)
 
+## Feasible solution
+
+- All permutations of aircrafts in a runway are feasible, as long as each flight is unique;
+- Each flight must be assigned to one runway.
+
+## Aircraft sequencing
+
+- All permutations of aircrafts in a runway are valid.
+- Given a permutation of aircrafts in a runway:
+
+    - The delay of the first aircraft is always zero;
+    - Additional waiting time can cause problems;
+
 ## Getting started
 
 ### Prerequisites

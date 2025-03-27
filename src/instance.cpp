@@ -12,26 +12,29 @@ Instance::Instance(std::filesystem::path &instance_file_path) : m_num_flights(0)
 
     file >> m_num_flights >> m_num_runways;
 
-    m_confirmation_time.resize(m_num_flights);
+    m_confirmation_times.resize(m_num_flights);
     for (size_t i = 0; i < m_num_flights; ++i) {
-        file >> m_confirmation_time[i];
+        file >> m_confirmation_times[i];
     }
 
-    m_taxing_time.resize(m_num_flights);
+    m_taxing_times.resize(m_num_flights);
     for (size_t i = 0; i < m_num_flights; ++i) {
-        file >> m_taxing_time[i];
+        file >> m_taxing_times[i];
     }
 
-    m_delay_penalty.resize(m_num_flights);
+    m_delay_penalties.resize(m_num_flights);
     for (size_t i = 0; i < m_num_flights; ++i) {
-        file >> m_delay_penalty[i];
+        file >> m_delay_penalties[i];
     }
 
-    m_separation_time_matrix.resize(m_num_flights);
+    size_t separation_buffer = 0;
+
+    m_separation_time_matrix.resize(m_num_flights * m_num_flights);
     for (size_t i = 0; i < m_num_flights; ++i) {
-        m_separation_time_matrix[i].resize(m_num_flights);
         for (size_t j = 0; j < m_num_flights; ++j) {
-            file >> m_separation_time_matrix[i][j];
+            file >> separation_buffer;
+
+            m_separation_time_matrix[(i * m_num_flights) + j] = separation_buffer;
         }
     }
 }
@@ -42,31 +45,31 @@ void Instance::print() const {
     std::cout << "Number of runways: " << m_num_runways << "\n\n";
 
     std::cout << "Confirmation Times:\n";
-    for (size_t i = 0; i < m_confirmation_time.size(); ++i) {
-        std::cout << "Flight " << i << ": " << std::setw(5) << m_confirmation_time[i] << "\n";
+    for (size_t i = 0; i < m_confirmation_times.size(); ++i) {
+        std::cout << "Flight " << i + 1 << ": " << std::setw(5) << m_confirmation_times[i] << "\n";
     }
 
     std::cout << "\nTaxing Times:\n";
-    for (size_t i = 0; i < m_taxing_time.size(); ++i) {
-        std::cout << "Flight " << i << ": " << std::setw(5) << m_taxing_time[i] << "\n";
+    for (size_t i = 0; i < m_taxing_times.size(); ++i) {
+        std::cout << "Flight " << i + 1 << ": " << std::setw(5) << m_taxing_times[i] << "\n";
     }
 
     std::cout << "\nDelay Penalties:\n";
-    for (size_t i = 0; i < m_delay_penalty.size(); ++i) {
-        std::cout << "Flight " << i << ": " << std::setw(5) << m_delay_penalty[i] << "\n";
+    for (size_t i = 0; i < m_delay_penalties.size(); ++i) {
+        std::cout << "Flight " << i + 1 << ": " << std::setw(5) << m_delay_penalties[i] << "\n";
     }
 
     std::cout << "\nSeparation Time Matrix:\n";
-    std::cout << "       ";
+    std::cout << "      ";
     for (size_t j = 0; j < m_num_flights; ++j) {
-        std::cout << std::setw(6) << "F" << j;
+        std::cout << std::setw(5) << "F" << j + 1;
     }
     std::cout << "\n";
 
-    for (size_t i = 0; i < m_separation_time_matrix.size(); ++i) {
-        std::cout << "F" << std::setw(3) << i << " |";
-        for (float time : m_separation_time_matrix[i]) {
-            std::cout << std::setw(6) << time;
+    for (size_t i = 0; i < m_num_flights; ++i) {
+        std::cout << "F" << std::setw(3) << i + 1 << " |";
+        for (size_t j = 0; j < m_num_flights; ++j) {
+            std::cout << std::setw(6) << get_separation_time(i, j);
         }
         std::cout << "\n";
     }

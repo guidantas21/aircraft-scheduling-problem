@@ -1,6 +1,7 @@
 sources = files(
   'main.cpp',
-  'instance.cpp'
+  'instance.cpp',
+  'solution.cpp'
 )
 
 incdir = include_directories('../include')

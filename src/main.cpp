@@ -1,9 +1,11 @@
+#include <cassert>
+#include <filesystem>
 #include <iostream>
 
-#include "instance.hpp"
-#include <filesystem>
-
 #include <argparse/argparse.hpp>
+
+#include "instance.hpp"
+#include "solution.hpp"
 
 int main(int argc, char *argv[]) {
     argparse::ArgumentParser program("ASP");
@@ -22,6 +24,12 @@ int main(int argc, char *argv[]) {
     Instance instance(instance_file_path);
 
     instance.print();
+
+    Solution solution;
+    solution.schedule = {{0, 1, 4}, {2, 3, 5, 0}};
+    solution.objective = 2800;
+
+    assert(solution.test_feasibility(instance));
 
     return 0;
 }
