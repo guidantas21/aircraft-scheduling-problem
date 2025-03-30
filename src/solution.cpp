@@ -1,44 +1,36 @@
 #include "solution.hpp"
+#include "runway.hpp"
 
 #include <algorithm>
 #include <cstddef>
 #include <iostream>
-#include <iterator>
 #include <unordered_set>
 
-bool Solution::test_feasibility(const Instance &instance) const {
-    std::unordered_set<size_t> flight_set;
+Solution::Solution(const Instance &instance) { runways.resize(instance.get_num_runways()); }
 
-    if (schedule.size() != instance.get_num_runways()) {
+bool Solution::test_feasibility(const Instance &instance, std::vector<Flight> &flights) const {
+    if (runways.size() != instance.get_num_runways()) {
         return false;
     }
+    std::unordered_set<size_t> flight_set;
 
+    size_t real_num_flights = 0;
     size_t real_objective = 0;
-    size_t total_flights = 0;
-    for (const auto &runway : schedule) {
-        size_t current_time = instance.get_confirmation_time(runway[0]);
-        flight_set.insert(runway[0]);
+    for (const Runway &runway : runways) {
+        if (not runway.test_feasibility(instance, flights)) {
+            return false;
+        }
+        real_objective += runway.penalty;
+        real_num_flights += runway.sequence.size();
 
-        total_flights += runway.size();
+        if (real_num_flights > instance.get_num_flights()) {
+            return false;
+        }
 
-        for (size_t j = 1; j < runway.size(); ++j) {
-            size_t flight = runway[j - 1];
-            size_t next_flight = runway[j];
-
-            if (flight_set.find(next_flight) == flight_set.end()) {
-                flight_set.insert(next_flight);
-
-                current_time = std::max(current_time + instance.get_taxing_time(flight) +
-                                            instance.get_separation_time(flight, next_flight),
-                                        instance.get_confirmation_time(next_flight));
-
-                size_t waiting_time = current_time - instance.get_confirmation_time(next_flight);
-
-                real_objective += instance.get_delay_penalty(next_flight) * waiting_time;
-            } else {
-                return false;
-            }
+        for (const size_t flight : runway.sequence) {
+            flight_set.insert(flight);
         }
     }
-    return real_objective == objective and total_flights == instance.get_num_flights();
+    return objective == real_objective and flight_set.size() == instance.get_num_flights() and
+           real_num_flights == instance.get_num_flights();
 }

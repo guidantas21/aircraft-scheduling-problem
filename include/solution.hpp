@@ -3,15 +3,19 @@
 
 #include <vector>
 
+#include "flight.hpp"
 #include "instance.hpp"
+#include "runway.hpp"
 
 struct Solution {
-    std::vector<std::vector<size_t>> schedule;
+    std::vector<Runway> runways;
     size_t objective = 0;
 
     Solution() = default;
 
-    bool test_feasibility(const Instance &instance) const;
+    Solution(const Instance &instance);
+
+    bool test_feasibility(const Instance &instance, std::vector<Flight> &flights) const;
 };
 
 #endif

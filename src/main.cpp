@@ -1,10 +1,13 @@
 #include <cassert>
+#include <cstddef>
 #include <filesystem>
 #include <iostream>
 
 #include <argparse/argparse.hpp>
 
+#include "flight.hpp"
 #include "instance.hpp"
+#include "runway.hpp"
 #include "solution.hpp"
 
 int main(int argc, char *argv[]) {
@@ -25,11 +28,31 @@ int main(int argc, char *argv[]) {
 
     instance.print();
 
+    std::vector<Flight> flights;
+
+    flights.reserve(instance.get_num_flights());
+
+    for (size_t i = 0; i < instance.get_num_flights(); ++i) {
+        flights.emplace_back(instance.get_confirmation_time(i), instance.get_taxing_time(i),
+                             instance.get_delay_penalty(i));
+    }
+
     Solution solution;
-    solution.schedule = {{0, 1, 4}, {2, 3, 5, 0}};
+
+    Runway r1;
+
+    r1.sequence = {0, 1, 4};
+    r1.penalty = 450;
+
+    Runway r2;
+
+    r2.sequence = {2, 3, 5};
+    r2.penalty = 2350;
+
+    solution.runways = {r1, r2};
     solution.objective = 2800;
 
-    assert(solution.test_feasibility(instance));
+    assert(solution.test_feasibility(instance, flights));
 
     return 0;
 }

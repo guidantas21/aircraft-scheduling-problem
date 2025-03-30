@@ -1,7 +1,11 @@
 sources = files(
   'main.cpp',
   'instance.cpp',
-  'solution.cpp'
+  'solution.cpp',
+  'construction.cpp',
+  'runway.cpp',
+  'utils.cpp',
+  'flight.cpp',
 )
 
 incdir = include_directories('../include')
