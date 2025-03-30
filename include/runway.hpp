@@ -22,6 +22,8 @@ struct Runway {
     bool test_penalty(const Instance &instance, const std::vector<Flight> &flights) const;
 
     bool test_feasibility(const Instance &instance, const std::vector<Flight> &flights) const;
+
+    void print() const;
 };
 
 #endif

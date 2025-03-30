@@ -12,14 +12,14 @@ Instance::Instance(std::filesystem::path &instance_file_path) : m_num_flights(0)
 
     file >> m_num_flights >> m_num_runways;
 
-    m_confirmation_times.resize(m_num_flights);
+    m_release_times.resize(m_num_flights);
     for (size_t i = 0; i < m_num_flights; ++i) {
-        file >> m_confirmation_times[i];
+        file >> m_release_times[i];
     }
 
-    m_taxing_times.resize(m_num_flights);
+    m_runway_occupancy_times.resize(m_num_flights);
     for (size_t i = 0; i < m_num_flights; ++i) {
-        file >> m_taxing_times[i];
+        file >> m_runway_occupancy_times[i];
     }
 
     m_delay_penalties.resize(m_num_flights);
@@ -44,14 +44,14 @@ void Instance::print() const {
     std::cout << "Number of flights: " << m_num_flights << "\n";
     std::cout << "Number of runways: " << m_num_runways << "\n\n";
 
-    std::cout << "Confirmation Times:\n";
-    for (size_t i = 0; i < m_confirmation_times.size(); ++i) {
-        std::cout << "Flight " << i + 1 << ": " << std::setw(5) << m_confirmation_times[i] << "\n";
+    std::cout << "Release Times:\n";
+    for (size_t i = 0; i < m_release_times.size(); ++i) {
+        std::cout << "Flight " << i + 1 << ": " << std::setw(5) << m_release_times[i] << "\n";
     }
 
-    std::cout << "\nTaxing Times:\n";
-    for (size_t i = 0; i < m_taxing_times.size(); ++i) {
-        std::cout << "Flight " << i + 1 << ": " << std::setw(5) << m_taxing_times[i] << "\n";
+    std::cout << "\nRunway Occupancy Times:\n";
+    for (size_t i = 0; i < m_runway_occupancy_times.size(); ++i) {
+        std::cout << "Flight " << i + 1 << ": " << std::setw(5) << m_runway_occupancy_times[i] << "\n";
     }
 
     std::cout << "\nDelay Penalties:\n";

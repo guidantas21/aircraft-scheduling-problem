@@ -2,6 +2,7 @@
 #include "flight.hpp"
 
 #include <algorithm>
+#include <iostream>
 #include <unordered_set>
 #include <vector>
 
@@ -13,19 +14,19 @@ uint32_t Runway::calculate_total_penalty(const Instance &instance, const std::ve
     if (sequence.empty()) {
         return 0;
     }
-    uint32_t current_time = flights[sequence.front()].get_confirmation_time();
+    uint32_t current_time = flights[sequence.front()].get_release_time();
 
     for (size_t i = 0; i < sequence.size() - 1; ++i) {
         Flight current_flight = flights[sequence[i]];
         Flight next_flight = flights[sequence[i + 1]];
 
-        uint32_t earliest_possible = current_time + current_flight.get_taxing_time() +
+        uint32_t earliest_possible = current_time + current_flight.get_runway_occupancy_time() +
                                      instance.get_separation_time(sequence[i], sequence[i + 1]);
-        uint32_t confirmation_time = next_flight.get_confirmation_time();
+        uint32_t release_time = next_flight.get_release_time();
 
-        current_time = std::max(confirmation_time, earliest_possible);
+        current_time = std::max(release_time, earliest_possible);
 
-        uint32_t delay = current_time - confirmation_time;
+        uint32_t delay = current_time - release_time;
 
         penalty += next_flight.get_delay_penalty() * delay;
     }
@@ -54,4 +55,15 @@ bool Runway::test_penalty(const Instance &instance, const std::vector<Flight> &f
 
 bool Runway::test_feasibility(const Instance &instance, const std::vector<Flight> &flights) const {
     return test_sequence_feasibility(instance) and test_penalty(instance, flights);
+}
+
+void Runway::print() const {
+    std::cout << "Flights: ";
+
+    for (const size_t flight : sequence) {
+        std::cout << flight + 1 << ' ';
+    }
+    std::cout << '\n';
+    std::cout << "Number of flights: " << sequence.size() << '\n';
+    std::cout << "Total penalty: " << penalty << '\n';
 }

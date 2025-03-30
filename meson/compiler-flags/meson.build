@@ -22,6 +22,16 @@ sanitizers_flags = [
   '-fsanitize=undefined',
 ]
 
+sanitizers_debug_flags = [
+  '-fexceptions',
+  '-DDEBUG',
+  '-g3',
+  '-fmax-errors=1',
+  '-pedantic',
+  '-pedantic-errors',
+  '-fstack-protector-all',
+]
+
 optimization_flags = [
   '-O3',
   '-DNDEBUG'
@@ -38,7 +48,13 @@ if get_option('sanitizers') == true
 endif 
 
 if get_option('buildtype') == 'debug'
-  add_project_arguments(debug_flags, language: 'cpp')
+  if get_option('sanitizers') == true
+    add_project_arguments(sanitizers_debug_flags, language: 'cpp')
+    add_project_arguments(sanitizers_flags, language: 'cpp')
+    add_project_link_arguments(sanitizers_flags, language: 'cpp')
+  else
+    add_project_arguments(debug_flags, language: 'cpp')
+  endif
 elif get_option('buildtype') == 'release'
   add_project_arguments(optimization_flags, language: 'cpp')
 endif

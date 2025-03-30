@@ -5,6 +5,7 @@
 
 #include <argparse/argparse.hpp>
 
+#include "construction.hpp"
 #include "flight.hpp"
 #include "instance.hpp"
 #include "runway.hpp"
@@ -33,7 +34,7 @@ int main(int argc, char *argv[]) {
     flights.reserve(instance.get_num_flights());
 
     for (size_t i = 0; i < instance.get_num_flights(); ++i) {
-        flights.emplace_back(instance.get_confirmation_time(i), instance.get_taxing_time(i),
+        flights.emplace_back(instance.get_release_time(i), instance.get_runway_occupancy_time(i),
                              instance.get_delay_penalty(i));
     }
 
@@ -53,6 +54,10 @@ int main(int argc, char *argv[]) {
     solution.objective = 2800;
 
     assert(solution.test_feasibility(instance, flights));
+
+    Solution s2 = construction::nearest_neighbor(instance, flights);
+
+    s2.print();
 
     return 0;
 }

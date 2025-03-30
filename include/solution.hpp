@@ -16,6 +16,8 @@ struct Solution {
     Solution(const Instance &instance);
 
     bool test_feasibility(const Instance &instance, std::vector<Flight> &flights) const;
+
+    void print() const;
 };
 
 #endif
