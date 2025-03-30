@@ -38,22 +38,19 @@ int main(int argc, char *argv[]) {
                              instance.get_delay_penalty(i));
     }
 
-    Solution solution;
+    Solution s1(instance);
 
-    Runway r1;
+    s1.runways[0].sequence = {0, 1, 5};
+    s1.runways[0].penalty = s1.runways[0].calculate_total_penalty(instance, flights);
+    s1.objective += s1.runways[0].penalty;
 
-    r1.sequence = {0, 1, 4};
-    r1.penalty = 450;
+    s1.runways[1].sequence = {2, 3, 4};
+    s1.runways[1].penalty = s1.runways[1].calculate_total_penalty(instance, flights);
+    s1.objective += s1.runways[1].penalty;
 
-    Runway r2;
+    assert(s1.test_feasibility(instance, flights));
 
-    r2.sequence = {2, 3, 5};
-    r2.penalty = 2350;
-
-    solution.runways = {r1, r2};
-    solution.objective = 2800;
-
-    assert(solution.test_feasibility(instance, flights));
+    s1.print();
 
     Solution s2 = construction::nearest_neighbor(instance, flights);
 

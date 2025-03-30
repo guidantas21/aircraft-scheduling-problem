@@ -18,6 +18,7 @@ uint32_t Runway::calculate_total_penalty(const Instance &instance, const std::ve
 
     for (size_t i = 0; i < sequence.size() - 1; ++i) {
         Flight current_flight = flights[sequence[i]];
+
         Flight next_flight = flights[sequence[i + 1]];
 
         uint32_t earliest_possible = current_time + current_flight.get_runway_occupancy_time() +

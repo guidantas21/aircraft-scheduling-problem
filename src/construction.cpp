@@ -44,7 +44,7 @@ Solution construction::nearest_neighbor(const Instance &instance, std::vector<Fl
 
         possible_insertions.reserve(instance.get_num_runways() * candidate_list.size());
 
-        for (size_t candidate_i = 0; candidate_i < candidate_list.size(); ++candidate_i) {
+        for (int candidate_i = candidate_list.size() - 1; candidate_i >= 0; --candidate_i) {
             size_t candidate = candidate_list[candidate_i];
             candidates_position[candidate] = candidate_i;
 
