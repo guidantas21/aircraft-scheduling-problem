@@ -36,8 +36,11 @@ int main(int argc, char *argv[]) {
         flights.emplace_back(instance.get_release_time(i), instance.get_runway_occupancy_time(i),
                              instance.get_delay_penalty(i));
     }
+    Solution s1 = construction::nearest_neighbor(instance, flights, 0);
 
-    Solution s2 = construction::nearest_neighbor(instance, flights, 0);
+    s1.print();
+
+    Solution s2 = construction::nearest_neighbor_2(instance, flights, 0);
 
     s2.print();
 
