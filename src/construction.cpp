@@ -1,9 +1,11 @@
 #include "construction.hpp"
+#include "utils.hpp"
 
 #include <algorithm>
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
+#include <iostream>
 
 struct Insertion {
     size_t flight;
@@ -17,7 +19,7 @@ struct Insertion {
     bool operator<(const Insertion &other) const { return penalty < other.penalty; }
 };
 
-Solution construction::nearest_neighbor(const Instance &instance, std::vector<Flight> &flights) {
+Solution construction::nearest_neighbor(const Instance &instance, std::vector<Flight> &flights, const float alpha) {
     Solution solution(instance);
 
     std::vector<size_t> candidate_list(instance.get_num_flights());
@@ -26,7 +28,7 @@ Solution construction::nearest_neighbor(const Instance &instance, std::vector<Fl
     for (size_t i = 0; i < instance.get_num_flights(); ++i) {
         candidate_list[i] = i;
     }
-    std::sort(candidate_list.begin(), candidate_list.end(), [instance](const size_t a, const size_t b) {
+    std::sort(candidate_list.begin(), candidate_list.end(), [&instance](const size_t a, const size_t b) {
         return instance.get_release_time(a) > instance.get_release_time(b);
     });
 
@@ -44,7 +46,7 @@ Solution construction::nearest_neighbor(const Instance &instance, std::vector<Fl
 
         possible_insertions.reserve(instance.get_num_runways() * candidate_list.size());
 
-        for (int candidate_i = candidate_list.size() - 1; candidate_i >= 0; --candidate_i) {
+        for (int candidate_i = (int)candidate_list.size() - 1; candidate_i >= 0; --candidate_i) {
             size_t candidate = candidate_list[candidate_i];
             candidates_position[candidate] = candidate_i;
 
@@ -65,7 +67,10 @@ Solution construction::nearest_neighbor(const Instance &instance, std::vector<Fl
         }
         std::sort(possible_insertions.begin(), possible_insertions.end());
 
-        Insertion selected_insertion = possible_insertions.front();
+        std::uniform_int_distribution<size_t> dist_selection(
+            0, std::ceil(alpha * static_cast<float>(possible_insertions.size())));
+
+        Insertion selected_insertion = possible_insertions[dist_selection(utils::engine)];
 
         solution.runways[selected_insertion.runway].sequence.push_back(selected_insertion.flight);
         flights[selected_insertion.flight].start_time = selected_insertion.start_time;

@@ -8,7 +8,6 @@
 #include "construction.hpp"
 #include "flight.hpp"
 #include "instance.hpp"
-#include "runway.hpp"
 #include "solution.hpp"
 
 int main(int argc, char *argv[]) {
@@ -38,21 +37,7 @@ int main(int argc, char *argv[]) {
                              instance.get_delay_penalty(i));
     }
 
-    Solution s1(instance);
-
-    s1.runways[0].sequence = {0, 1, 5};
-    s1.runways[0].penalty = s1.runways[0].calculate_total_penalty(instance, flights);
-    s1.objective += s1.runways[0].penalty;
-
-    s1.runways[1].sequence = {2, 3, 4};
-    s1.runways[1].penalty = s1.runways[1].calculate_total_penalty(instance, flights);
-    s1.objective += s1.runways[1].penalty;
-
-    assert(s1.test_feasibility(instance, flights));
-
-    s1.print();
-
-    Solution s2 = construction::nearest_neighbor(instance, flights);
+    Solution s2 = construction::nearest_neighbor(instance, flights, 0);
 
     s2.print();
 

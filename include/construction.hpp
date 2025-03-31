@@ -9,7 +9,7 @@
 
 namespace construction {
 
-Solution nearest_neighbor(const Instance &instance, std::vector<Flight> &flights);
+Solution nearest_neighbor(const Instance &instance, std::vector<Flight> &flights, float alpha);
 
 }
 

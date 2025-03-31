@@ -4,7 +4,6 @@ sources = files(
   'solution.cpp',
   'construction.cpp',
   'runway.cpp',
-  'utils.cpp',
   'flight.cpp',
 )
 
