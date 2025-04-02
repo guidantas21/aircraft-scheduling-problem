@@ -34,6 +34,10 @@ uint32_t Runway::calculate_total_penalty(const Instance &instance, const std::ve
     return penalty;
 }
 
+void Runway::update_total_penalty(const Instance &instance, const std::vector<Flight> &flights) {
+    penalty = calculate_total_penalty(instance, flights);
+}
+
 bool Runway::test_sequence_feasibility(const Instance &instance) const {
     std::unordered_set<size_t> set;
 

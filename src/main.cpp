@@ -8,6 +8,7 @@
 #include "construction.hpp"
 #include "flight.hpp"
 #include "instance.hpp"
+#include "moves.hpp"
 #include "solution.hpp"
 
 int main(int argc, char *argv[]) {
@@ -41,6 +42,13 @@ int main(int argc, char *argv[]) {
     s1.print();
 
     Solution s2 = construction::nearest_neighbor_2(instance, flights, 0);
+
+    s2.print();
+
+    moves::apply_intra_swap(s2, 1, 2, 1);
+    s2.update_objective(instance, flights);
+
+    assert(s2.test_feasibility(instance, flights));
 
     s2.print();
 

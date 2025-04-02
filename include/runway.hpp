@@ -17,6 +17,8 @@ struct Runway {
 
     uint32_t calculate_total_penalty(const Instance &instance, const std::vector<Flight> &flights) const;
 
+    void update_total_penalty(const Instance &instance, const std::vector<Flight> &flights);
+
     bool test_sequence_feasibility(const Instance &instance) const;
 
     bool test_penalty(const Instance &instance, const std::vector<Flight> &flights) const;

@@ -1,6 +1,7 @@
 #ifndef SOLUTION_HPP
 #define SOLUTION_HPP
 
+#include <cstdint>
 #include <vector>
 
 #include "flight.hpp"
@@ -15,7 +16,11 @@ struct Solution {
 
     Solution(const Instance &instance);
 
-    bool test_feasibility(const Instance &instance, std::vector<Flight> &flights) const;
+    uint32_t calculate_objective(const Instance &instance, const std::vector<Flight> &flights) const;
+
+    void update_objective(const Instance &instance, const std::vector<Flight> &flights);
+
+    bool test_feasibility(const Instance &instance, const std::vector<Flight> &flights) const;
 
     void print() const;
 };
