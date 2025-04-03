@@ -62,7 +62,7 @@ bool Solution::test_feasibility(const Instance &instance, const std::vector<Flig
 }
 
 void Solution::print() const {
-    std::cout << "Solution\n\n";
+    std::cout << "\nSolution\n\n";
     size_t i = 1;
     for (const Runway &runway : runways) {
         std::cout << ">> Runway " << i << '\n';
