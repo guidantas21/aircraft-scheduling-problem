@@ -37,6 +37,7 @@ int main(int argc, char *argv[]) {
         flights.emplace_back(instance.get_release_time(i), instance.get_runway_occupancy_time(i),
                              instance.get_delay_penalty(i));
     }
+
     Solution s1 = construction::nearest_neighbor(instance, flights, 0);
 
     s1.print();
@@ -45,12 +46,19 @@ int main(int argc, char *argv[]) {
 
     s2.print();
 
-    moves::apply_intra_swap(s2, 1, 2, 1);
-    s2.update_objective(instance, flights);
-
     assert(s2.test_feasibility(instance, flights));
 
     s2.print();
+
+    Solution s3 = construction::nearest_neighbor(instance, flights, 0);
+    
+    for (int i = 0; i < s3.runways.size(); i++) {
+        moves::best_improvement_intra_swap(instance, s3, i, flights);
+    }
+
+    s3.print();
+
+    assert(s3.test_feasibility(instance, flights));
 
     return 0;
 }

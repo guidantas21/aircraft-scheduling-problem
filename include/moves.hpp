@@ -21,6 +21,8 @@ inline void apply_inter_move();
 
 inline void apply_intra_move();
 
+void best_improvement_intra_swap(const Instance &instance, Solution &solution, const size_t runway_i, const std::vector<Flight> &flights);
+
 } // namespace moves
 
 #endif
