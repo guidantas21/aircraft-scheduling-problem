@@ -5,6 +5,7 @@ sources = files(
   'construction.cpp',
   'runway.cpp',
   'flight.cpp',
+  'moves.cpp',
 )
 
 incdir = include_directories('../include')
