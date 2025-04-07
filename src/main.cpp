@@ -1,14 +1,11 @@
 #include <cassert>
-#include <cstddef>
 #include <filesystem>
 #include <iostream>
 
 #include <argparse/argparse.hpp>
 
-#include "construction.hpp"
-#include "flight.hpp"
+#include "ASP.hpp"
 #include "instance.hpp"
-#include "moves.hpp"
 #include "solution.hpp"
 
 int main(int argc, char *argv[]) {
@@ -29,36 +26,15 @@ int main(int argc, char *argv[]) {
 
     instance.print();
 
-    std::vector<Flight> flights;
+    ASP asp(instance);
 
-    flights.reserve(instance.get_num_flights());
-
-    for (size_t i = 0; i < instance.get_num_flights(); ++i) {
-        flights.emplace_back(instance.get_release_time(i), instance.get_runway_occupancy_time(i),
-                             instance.get_delay_penalty(i));
-    }
-
-    Solution s1 = construction::nearest_neighbor(instance, flights, 0);
+    Solution s1 = asp.randomized_greedy(0);
 
     s1.print();
 
-    Solution s2 = construction::nearest_neighbor_2(instance, flights, 0);
+    Solution vnd_s1 = asp.VND(s1);
 
-    s2.print();
-
-    assert(s2.test_feasibility(instance, flights));
-
-    s2.print();
-
-    Solution s3 = construction::nearest_neighbor(instance, flights, 0);
-    
-    for (int i = 0; i < s3.runways.size(); i++) {
-        moves::best_improvement_intra_swap(instance, s3, i, flights);
-    }
-
-    s3.print();
-
-    assert(s3.test_feasibility(instance, flights));
+    vnd_s1.print();
 
     return 0;
 }
