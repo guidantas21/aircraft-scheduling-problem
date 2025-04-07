@@ -16,11 +16,11 @@ struct Solution {
 
     Solution(const Instance &instance);
 
-    uint32_t calculate_objective(const Instance &instance, const std::vector<Flight> &flights) const;
+    uint32_t calculate_objective(const Instance &instance) const;
 
-    void update_objective(const Instance &instance, const std::vector<Flight> &flights);
+    void update_objective(const Instance &instance);
 
-    bool test_feasibility(const Instance &instance, const std::vector<Flight> &flights) const;
+    bool test_feasibility(const Instance &instance) const;
 
     void print() const;
 };

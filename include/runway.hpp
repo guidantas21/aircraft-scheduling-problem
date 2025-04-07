@@ -2,28 +2,27 @@
 #define RUNWAY_HPP
 
 #include <cstdint>
+#include <functional>
 #include <vector>
 
 #include "flight.hpp"
 #include "instance.hpp"
 
 struct Runway {
-    std::vector<size_t> sequence;
+    std::vector<std::reference_wrapper<Flight>> sequence;
     uint32_t penalty = 0;
 
     Runway() = default;
 
-    Runway(std::vector<size_t> &sequence, size_t penalty);
+    uint32_t calculate_total_penalty(const Instance &instance) const;
 
-    uint32_t calculate_total_penalty(const Instance &instance, const std::vector<Flight> &flights) const;
-
-    void update_total_penalty(const Instance &instance, const std::vector<Flight> &flights);
+    void update_total_penalty(const Instance &instance);
 
     bool test_sequence_feasibility(const Instance &instance) const;
 
-    bool test_penalty(const Instance &instance, const std::vector<Flight> &flights) const;
+    bool test_penalty(const Instance &instance) const;
 
-    bool test_feasibility(const Instance &instance, const std::vector<Flight> &flights) const;
+    bool test_feasibility(const Instance &instance) const;
 
     void print() const;
 };
