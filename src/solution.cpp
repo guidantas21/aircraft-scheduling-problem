@@ -2,6 +2,7 @@
 #include "instance.hpp"
 #include "runway.hpp"
 
+#include <cassert>
 #include <cmath>
 #include <cstddef>
 #include <iostream>
@@ -32,6 +33,8 @@ void Solution::update_objective(const Instance &instance) {
         new_objective += runway.penalty;
     }
     objective = new_objective;
+
+    assert(test_feasibility(instance));
 }
 
 bool Solution::test_feasibility(const Instance &instance) const {

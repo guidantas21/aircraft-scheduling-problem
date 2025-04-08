@@ -8,7 +8,7 @@
 #include "flight.hpp"
 
 uint32_t Runway::calculate_total_penalty(const Instance &instance) const {
-    size_t penalty = 0;
+    size_t real_penalty = 0;
     if (sequence.empty()) {
         return 0;
     }
@@ -24,9 +24,9 @@ uint32_t Runway::calculate_total_penalty(const Instance &instance) const {
 
         uint32_t delay = current_time - release_time;
 
-        penalty += sequence[i + 1].get().get_delay_penalty() * delay;
+        real_penalty += sequence[i + 1].get().get_delay_penalty() * delay;
     }
-    return penalty;
+    return real_penalty;
 }
 
 void Runway::update_total_penalty(const Instance &instance) { penalty = calculate_total_penalty(instance); }
