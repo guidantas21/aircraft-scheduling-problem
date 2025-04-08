@@ -1,7 +1,11 @@
 #include "ASP.hpp"
 
 #include <cassert>
+#include <cstddef>
+#include <cstdint>
 #include <functional>
+#include <iostream>
+#include <utility>
 
 /**
  * @brief Performs an intra-runway swap to find the best improvement in penalty for a given runway.
@@ -65,11 +69,58 @@ void ASP::best_improvement_intra_swap(Solution &solution, const size_t runway_i)
             std::swap(sequence[i], sequence[j]); // Undo the swap to restore the original sequence
         }
     }
-
     // Apply the best swap found
     std::swap(solution.runways[runway_i].sequence[best_i], solution.runways[runway_i].sequence[best_j]);
     solution.runways[runway_i].penalty -= delta;
     solution.objective -= delta;
 
+    assert(solution.test_feasibility(m_instance));
+}
+
+void ASP::best_improvement_inter_swap(Solution &solution) {
+    size_t best_flight_i = 0;
+    size_t best_flight_j = 0;
+
+    size_t best_runway_i = 0;
+    size_t best_runway_j = 0;
+
+    int best_delta = 0;
+
+    for (size_t runway_i = 0; runway_i < m_instance.get_num_runways(); ++runway_i) {
+        for (size_t runway_j = runway_i + 1; runway_j < m_instance.get_num_runways(); ++runway_j) {
+            for (size_t flight_i = 0; flight_i < solution.runways[runway_i].sequence.size(); ++flight_i) {
+                for (size_t flight_j = 0; flight_j < solution.runways[runway_j].sequence.size(); ++flight_j) {
+                    uint32_t objective_before = solution.objective;
+
+                    std::swap(solution.runways[runway_i].sequence[flight_i],
+                              solution.runways[runway_j].sequence[flight_j]);
+
+                    solution.update_objective(m_instance);
+
+                    int delta = static_cast<int>(solution.objective - objective_before);
+
+                    std::swap(solution.runways[runway_i].sequence[flight_i],
+                              solution.runways[runway_j].sequence[flight_j]);
+
+                    solution.update_objective(m_instance);
+
+                    if (delta < best_delta) {
+                        best_delta = delta;
+
+                        best_flight_i = flight_i;
+                        best_flight_j = flight_j;
+
+                        best_runway_i = runway_i;
+                        best_runway_j = runway_j;
+                    }
+                }
+            }
+        }
+    }
+    if (best_delta < 0) {
+        std::swap(solution.runways[best_runway_i].sequence[best_flight_i],
+                  solution.runways[best_runway_j].sequence[best_flight_j]);
+        solution.update_objective(m_instance);
+    }
     assert(solution.test_feasibility(m_instance));
 }

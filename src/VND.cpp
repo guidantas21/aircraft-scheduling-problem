@@ -5,10 +5,10 @@
 #include <cstdint>
 #include <vector>
 
-enum class Neighborhood : uint8_t { IntraSwap };
+enum class Neighborhood : uint8_t { IntraSwap, InterSwap };
 
 Solution ASP::VND(Solution &solution) { // NOLINT
-    std::vector<Neighborhood> neighborhoods{Neighborhood::IntraSwap};
+    std::vector<Neighborhood> neighborhoods{Neighborhood::IntraSwap, Neighborhood::InterSwap};
 
     size_t current_neighborhood = 0;
 
@@ -20,6 +20,9 @@ Solution ASP::VND(Solution &solution) { // NOLINT
             for (size_t runway_i = 0; runway_i < solution.runways.size(); ++runway_i) {
                 best_improvement_intra_swap(solution, runway_i);
             }
+            break;
+        case Neighborhood::InterSwap:
+            best_improvement_inter_swap(best_solution);
             break;
         }
 
