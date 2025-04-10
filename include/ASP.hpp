@@ -15,6 +15,7 @@ private:
 
 public:
     void best_improvement_intra_swap(Solution &solution, size_t runway_i);
+    void best_improvement_inter_move(Solution &solution);
 
     Solution VND(Solution &solution); // NOLINT
 
