@@ -91,13 +91,8 @@ void ASP::best_improvement_inter_move(Solution &solution) {
 
     uint32_t original_penalty = solution.objective; // Original penalty of the solution
 
-    std::vector<std::vector<std::reference_wrapper<Flight>>> sequence; // All the sequences of flights in each runway
-    for (size_t i = 0; i < solution.runways.size(); i++){
-        sequence.push_back(solution.runways[i].sequence); // Original sequence of flights on the runway
-    }
-
     // If the penalty is zero or there are fewer than two runways, no move is needed
-    if (original_penalty == 0 || sequence.size() < 2) {
+    if (original_penalty == 0 || solution.runways.size() < 2) {
         return;
     }
 
@@ -107,20 +102,22 @@ void ASP::best_improvement_inter_move(Solution &solution) {
     uint32_t current_time = 0;          // Tracks the current time during penalty calculation
 
     // Iterate through all the runways
-    for (size_t runway_o = 0; runway_o < sequence.size(); runway_o++){ 
+    for (size_t runway_o = 0; runway_o < solution.runways.size(); runway_o++){ 
 
         // Iterate through all the flights of the origin runway
-        for (size_t flight_o = 0; flight_o < sequence[runway_o].size(); flight_o++){
+        for (size_t flight_o = 0; flight_o < solution.runways[runway_o].sequence.size(); flight_o++){
+            std::cout << "Voo [" << solution.runways[runway_o].sequence[flight_o].get().get_id()+1 << "] retirado da pista [" << runway_o+1 << "]\n";
 
             // When I select a flight to move I could calculate the penalty reduction associated from it
             // Pop the flight and update penalty_reduction
             original_runway_penalty = solution.runways[runway_o].penalty;
-            Flight poped_flight = sequence[runway_o][flight_o]; // Stores the poped flight to reinsert it later
-            sequence[runway_o].erase(sequence[runway_o].begin()+flight_o); // pop the flight
+            Flight& poped_flight = solution.runways[runway_o].sequence[flight_o].get(); // Stores the poped flight to reinsert it later
+            solution.runways[runway_o].sequence.erase(solution.runways[runway_o].sequence.begin()+flight_o); // pop the flight
 
             solution.runways[runway_o].update_total_penalty(m_instance); // udpate the runway penalty after
 
-            std::cout << "Voo [" << sequence[runway_o][flight_o].get().get_id()+1 << "] retirado da pista [" << runway_o+1 << "]\n";
+            solution.print();
+
             std::cout << "Old penalty: " << original_runway_penalty << std::endl;
             std::cout << "New penalty: " << solution.runways[runway_o].penalty << std::endl;
 
@@ -142,7 +139,9 @@ void ASP::best_improvement_inter_move(Solution &solution) {
             // }
 
             // Undo the pop
-            sequence[runway_o].insert(sequence[runway_o].begin()+flight_o, poped_flight);
+            solution.runways[runway_o].sequence.insert(solution.runways[runway_o].sequence.begin()+flight_o, poped_flight);
+
+            solution.print();
         }
     }
 
