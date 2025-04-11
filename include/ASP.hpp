@@ -22,6 +22,8 @@ public:
 
     Solution randomized_greedy(float alpha);
 
+    Solution GRASP_VND(size_t max_iterations); // NOLINT
+
     ASP(Instance &instance);
 };
 
