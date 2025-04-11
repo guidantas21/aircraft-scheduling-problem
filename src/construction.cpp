@@ -36,6 +36,7 @@ Solution ASP::randomized_greedy(const float alpha) {
 
     for (size_t runway_i = 0; runway_i < m_instance.get_num_runways(); ++runway_i) {
         solution.runways[runway_i].sequence.emplace_back(candidate_list.back());
+        solution.runways[runway_i].prefix_penalty.push_back(0);
 
         Flight &candidate = candidate_list.back().get();
 
@@ -86,6 +87,7 @@ Solution ASP::randomized_greedy(const float alpha) {
 
         solution.runways[selected_insertion.runway].sequence.emplace_back(selected_candidate);
         solution.runways[selected_insertion.runway].penalty += selected_insertion.penalty;
+        solution.runways[selected_insertion.runway].prefix_penalty.push_back(solution.runways[selected_insertion.runway].penalty);
         solution.objective += selected_insertion.penalty;
 
         candidate_list.erase(candidate_list.begin() + static_cast<long>(selected_insertion.candidate_i));

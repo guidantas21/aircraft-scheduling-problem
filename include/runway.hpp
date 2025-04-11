@@ -10,6 +10,7 @@
 
 struct Runway {
     std::vector<std::reference_wrapper<Flight>> sequence;
+    std::vector<uint32_t> prefix_penalty;
     uint32_t penalty = 0;
 
     Runway() = default;

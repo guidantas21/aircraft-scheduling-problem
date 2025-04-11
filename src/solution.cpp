@@ -15,6 +15,8 @@ Solution::Solution(const Instance &instance) {
 
     for (Runway &runway : runways) {
         runway.sequence.reserve(average_flights_per_runway);
+        runway.prefix_penalty.reserve(average_flights_per_runway + 1);
+        runway.prefix_penalty.resize(1);
     }
 }
 
