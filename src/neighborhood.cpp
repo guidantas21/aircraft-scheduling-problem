@@ -29,7 +29,7 @@ void ASP::best_improvement_intra_swap(Solution &solution, const size_t runway_i)
         return;
     }
 
-    uint32_t penalty = 0;        // Penalty of the new sequence after a swap
+    uint32_t penalty = 0;         // Penalty of the new sequence after a swap
     uint32_t prev_start_time = 0; // Tracks the current time during penalty calculation
 
     // Iterate through all possible pairs of flights in the sequence to evaluate swaps
@@ -44,14 +44,17 @@ void ASP::best_improvement_intra_swap(Solution &solution, const size_t runway_i)
                 prev_start_time = sequence[0].get().get_release_time();
             } else {
                 prev_start_time = sequence[i - 1].get().start_time;
-            } 
+            }
 
             for (size_t k = (i == 0 ? i + 1 : i); k < sequence.size(); k++) {
                 Flight &current_flight = sequence[k].get();
                 Flight &prev_flight = sequence[k - 1].get();
 
                 // prev_start_time becomes current_start_time
-                prev_start_time = std::max(current_flight.get_release_time(), prev_start_time + prev_flight.get_runway_occupancy_time() + m_instance.get_separation_time(prev_flight.get_id(), current_flight.get_id()));
+                prev_start_time =
+                    std::max(current_flight.get_release_time(),
+                             prev_start_time + prev_flight.get_runway_occupancy_time() +
+                                 m_instance.get_separation_time(prev_flight.get_id(), current_flight.get_id()));
                 penalty += (prev_start_time - current_flight.get_release_time()) * current_flight.get_delay_penalty();
             }
 
@@ -70,23 +73,28 @@ void ASP::best_improvement_intra_swap(Solution &solution, const size_t runway_i)
         sequence[best_i].get().position = best_j;
         sequence[best_j].get().position = best_i;
         std::swap(solution.runways[runway_i].sequence[best_i], solution.runways[runway_i].sequence[best_j]);
-        
+
         if (best_i == 0) {
             Flight &current_flight = sequence[0].get();
             current_flight.start_time = current_flight.get_release_time();
             solution.runways[runway_i].prefix_penalty[1] = 0;
             best_i++;
         }
-        
+
         for (size_t i = best_i; i < sequence.size(); i++) {
             Flight &current_flight = sequence[i].get();
             Flight &prev_flight = sequence[i - 1].get();
 
-            current_flight.start_time = std::max(current_flight.get_release_time(), prev_flight.start_time + prev_flight.get_runway_occupancy_time() + m_instance.get_separation_time(prev_flight.get_id(), current_flight.get_id()));
-            
-            solution.runways[runway_i].prefix_penalty[i + 1] = solution.runways[runway_i].prefix_penalty[i] + (current_flight.start_time - current_flight.get_release_time()) * current_flight.get_delay_penalty();            
+            current_flight.start_time =
+                std::max(current_flight.get_release_time(),
+                         prev_flight.start_time + prev_flight.get_runway_occupancy_time() +
+                             m_instance.get_separation_time(prev_flight.get_id(), current_flight.get_id()));
+
+            solution.runways[runway_i].prefix_penalty[i + 1] =
+                solution.runways[runway_i].prefix_penalty[i] +
+                (current_flight.start_time - current_flight.get_release_time()) * current_flight.get_delay_penalty();
         }
-        
+
         solution.runways[runway_i].penalty -= delta;
         solution.objective -= delta;
         assert(solution.test_feasibility(m_instance));
@@ -104,11 +112,11 @@ void ASP::best_improvement_inter_swap(Solution &solution) {
     uint32_t penalty_i = 0;
     uint32_t penalty_j = 0;
     uint32_t prev_start_time_i = 0;
-    uint32_t prev_start_time_j = 0;    
+    uint32_t prev_start_time_j = 0;
 
     for (size_t runway_i = 0; runway_i < m_instance.get_num_runways() - 1; ++runway_i) {
         for (size_t runway_j = runway_i + 1; runway_j < m_instance.get_num_runways(); ++runway_j) {
-            
+
             // Get all combinations (flight_i, flight_j)
             for (size_t flight_i = 0; flight_i < solution.runways[runway_i].sequence.size() - 1; ++flight_i) {
                 for (size_t flight_j = 0; flight_j < solution.runways[runway_j].sequence.size(); ++flight_j) {
@@ -116,7 +124,8 @@ void ASP::best_improvement_inter_swap(Solution &solution) {
                     uint32_t original_penalty_i = solution.runways[runway_i].penalty;
                     uint32_t original_penalty_j = solution.runways[runway_j].penalty;
 
-                    std::swap(solution.runways[runway_i].sequence[flight_i], solution.runways[runway_j].sequence[flight_j]);
+                    std::swap(solution.runways[runway_i].sequence[flight_i],
+                              solution.runways[runway_j].sequence[flight_j]);
 
                     // update runway_i
                     penalty_i = solution.runways[runway_i].prefix_penalty[flight_i];
@@ -127,13 +136,18 @@ void ASP::best_improvement_inter_swap(Solution &solution) {
                         prev_start_time_i = solution.runways[runway_i].sequence[flight_i - 1].get().start_time;
                     }
 
-                    for (size_t k = (flight_i == 0 ? 1 : flight_i); k < solution.runways[runway_i].sequence.size(); k++) {
+                    for (size_t k = (flight_i == 0 ? 1 : flight_i); k < solution.runways[runway_i].sequence.size();
+                         k++) {
                         Flight &current_flight = solution.runways[runway_i].sequence[k].get();
                         Flight &prev_flight = solution.runways[runway_i].sequence[k - 1].get();
 
                         // prev_start_time_i becomes current_start_time_i
-                        prev_start_time_i = std::max(current_flight.get_release_time(), prev_start_time_i + prev_flight.get_runway_occupancy_time() + m_instance.get_separation_time(prev_flight.get_id(), current_flight.get_id()));
-                        penalty_i += (prev_start_time_i - current_flight.get_release_time()) * current_flight.get_delay_penalty();
+                        prev_start_time_i =
+                            std::max(current_flight.get_release_time(),
+                                     prev_start_time_i + prev_flight.get_runway_occupancy_time() +
+                                         m_instance.get_separation_time(prev_flight.get_id(), current_flight.get_id()));
+                        penalty_i += (prev_start_time_i - current_flight.get_release_time()) *
+                                     current_flight.get_delay_penalty();
                     }
 
                     // update runway_j
@@ -145,16 +159,22 @@ void ASP::best_improvement_inter_swap(Solution &solution) {
                         prev_start_time_j = solution.runways[runway_j].sequence[flight_j - 1].get().start_time;
                     }
 
-                    for (size_t k = (flight_j == 0 ? 1 : flight_j); k < solution.runways[runway_j].sequence.size(); k++) {
+                    for (size_t k = (flight_j == 0 ? 1 : flight_j); k < solution.runways[runway_j].sequence.size();
+                         k++) {
                         Flight &current_flight = solution.runways[runway_j].sequence[k].get();
                         Flight &prev_flight = solution.runways[runway_j].sequence[k - 1].get();
 
                         // prev_start_time_j becomes current_start_time_j
-                        prev_start_time_j = std::max(current_flight.get_release_time(), prev_start_time_j + prev_flight.get_runway_occupancy_time() + m_instance.get_separation_time(prev_flight.get_id(), current_flight.get_id()));
-                        penalty_j += (prev_start_time_j - current_flight.get_release_time()) * current_flight.get_delay_penalty();
+                        prev_start_time_j =
+                            std::max(current_flight.get_release_time(),
+                                     prev_start_time_j + prev_flight.get_runway_occupancy_time() +
+                                         m_instance.get_separation_time(prev_flight.get_id(), current_flight.get_id()));
+                        penalty_j += (prev_start_time_j - current_flight.get_release_time()) *
+                                     current_flight.get_delay_penalty();
                     }
 
-                    if (penalty_i + penalty_j < original_penalty_i + original_penalty_j && original_penalty_i + original_penalty_j - (penalty_i + penalty_j) > delta) {
+                    if (penalty_i + penalty_j < original_penalty_i + original_penalty_j &&
+                        original_penalty_i + original_penalty_j - (penalty_i + penalty_j) > delta) {
                         delta = original_penalty_i + original_penalty_j - penalty_i - penalty_j;
                         best_runway_i = runway_i;
                         best_runway_j = runway_j;
@@ -163,7 +183,8 @@ void ASP::best_improvement_inter_swap(Solution &solution) {
                     }
 
                     // Undo the swap to restore the original sequence
-                    std::swap(solution.runways[runway_i].sequence[flight_i], solution.runways[runway_j].sequence[flight_j]);
+                    std::swap(solution.runways[runway_i].sequence[flight_i],
+                              solution.runways[runway_j].sequence[flight_j]);
                 }
             }
         }
@@ -173,11 +194,12 @@ void ASP::best_improvement_inter_swap(Solution &solution) {
     if (delta > 0) {
         solution.runways[best_runway_i].sequence[best_flight_i].get().position = best_flight_j;
         solution.runways[best_runway_i].sequence[best_flight_i].get().runway = best_runway_j;
-        
+
         solution.runways[best_runway_j].sequence[best_flight_j].get().position = best_flight_i;
         solution.runways[best_runway_j].sequence[best_flight_j].get().runway = best_runway_i;
-        
-        std::swap(solution.runways[best_runway_i].sequence[best_flight_i], solution.runways[best_runway_j].sequence[best_flight_j]);
+
+        std::swap(solution.runways[best_runway_i].sequence[best_flight_i],
+                  solution.runways[best_runway_j].sequence[best_flight_j]);
 
         // Update prefix best_runway_i
         if (best_flight_i == 0) {
@@ -194,9 +216,14 @@ void ASP::best_improvement_inter_swap(Solution &solution) {
             Flight &current_flight = solution.runways[best_runway_i].sequence[i].get();
             Flight &prev_flight = solution.runways[best_runway_i].sequence[i - 1].get();
 
-            current_flight.start_time = std::max(current_flight.get_release_time(), prev_flight.start_time + prev_flight.get_runway_occupancy_time() + m_instance.get_separation_time(prev_flight.get_id(), current_flight.get_id()));
-            
-            solution.runways[best_runway_i].prefix_penalty[i + 1] = solution.runways[best_runway_i].prefix_penalty[i] + (current_flight.start_time - current_flight.get_release_time()) * current_flight.get_delay_penalty();            
+            current_flight.start_time =
+                std::max(current_flight.get_release_time(),
+                         prev_flight.start_time + prev_flight.get_runway_occupancy_time() +
+                             m_instance.get_separation_time(prev_flight.get_id(), current_flight.get_id()));
+
+            solution.runways[best_runway_i].prefix_penalty[i + 1] =
+                solution.runways[best_runway_i].prefix_penalty[i] +
+                (current_flight.start_time - current_flight.get_release_time()) * current_flight.get_delay_penalty();
         }
 
         // Update prefix best_runway_j
@@ -211,9 +238,14 @@ void ASP::best_improvement_inter_swap(Solution &solution) {
             Flight &current_flight = solution.runways[best_runway_j].sequence[j].get();
             Flight &prev_flight = solution.runways[best_runway_j].sequence[j - 1].get();
 
-            current_flight.start_time = std::max(current_flight.get_release_time(), prev_flight.start_time + prev_flight.get_runway_occupancy_time() + m_instance.get_separation_time(prev_flight.get_id(), current_flight.get_id()));
-            
-            solution.runways[best_runway_j].prefix_penalty[j + 1] = solution.runways[best_runway_j].prefix_penalty[j] + (current_flight.start_time - current_flight.get_release_time()) * current_flight.get_delay_penalty();            
+            current_flight.start_time =
+                std::max(current_flight.get_release_time(),
+                         prev_flight.start_time + prev_flight.get_runway_occupancy_time() +
+                             m_instance.get_separation_time(prev_flight.get_id(), current_flight.get_id()));
+
+            solution.runways[best_runway_j].prefix_penalty[j + 1] =
+                solution.runways[best_runway_j].prefix_penalty[j] +
+                (current_flight.start_time - current_flight.get_release_time()) * current_flight.get_delay_penalty();
         }
 
         // Update penaltys
@@ -221,5 +253,5 @@ void ASP::best_improvement_inter_swap(Solution &solution) {
         solution.runways[best_runway_j].penalty = solution.runways[best_runway_j].prefix_penalty.back();
         solution.objective -= delta;
         assert(solution.test_feasibility(m_instance));
-    } 
+    }
 }

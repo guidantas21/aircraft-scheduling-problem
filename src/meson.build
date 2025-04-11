@@ -7,7 +7,8 @@ sources = files(
   'flight.cpp',
   'neighborhood.cpp',
   'ASP.cpp',
-  'VND.cpp'
+  'VND.cpp',
+  'GRASP.cpp',
 )
 
 incdir = include_directories('../include')
