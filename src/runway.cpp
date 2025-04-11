@@ -60,6 +60,13 @@ void Runway::print() const {
         std::cout << flight.get().get_id() + 1 << ' ';
     }
     std::cout << '\n';
+
+    std::cout << "Prefix Penalty: ";
+    for (const auto &penalty : prefix_penalty) {
+        std::cout << penalty << ' ';
+    }
+
+    std::cout << '\n';
     std::cout << "Number of flights: " << sequence.size() << '\n';
     std::cout << "Total penalty: " << penalty << '\n';
 }
