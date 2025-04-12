@@ -4,7 +4,6 @@
 #include <cstdint>
 #include <vector>
 
-#include "flight.hpp"
 #include "instance.hpp"
 #include "runway.hpp"
 
@@ -23,6 +22,8 @@ struct Solution {
     bool test_feasibility(const Instance &instance) const;
 
     void print() const;
+
+    void print_runway() const;
 };
 
 #endif

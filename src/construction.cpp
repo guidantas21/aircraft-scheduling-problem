@@ -87,7 +87,8 @@ Solution ASP::randomized_greedy(const float alpha) {
 
         solution.runways[selected_insertion.runway].sequence.emplace_back(selected_candidate);
         solution.runways[selected_insertion.runway].penalty += selected_insertion.penalty;
-        solution.runways[selected_insertion.runway].prefix_penalty.push_back(solution.runways[selected_insertion.runway].penalty);
+        solution.runways[selected_insertion.runway].prefix_penalty.push_back(
+            solution.runways[selected_insertion.runway].penalty);
         solution.objective += selected_insertion.penalty;
 
         candidate_list.erase(candidate_list.begin() + static_cast<long>(selected_insertion.candidate_i));
@@ -97,8 +98,7 @@ Solution ASP::randomized_greedy(const float alpha) {
     return solution;
 }
 
-/*Solution construction::nearest_neighbor_2(const Instance &instance, std::vector<Flight> &flights, const float alpha)
- * {*/
+/*Solution ASP::randomized_greedy_2(const float alpha) {*/
 /*    Solution solution(instance);*/
 /**/
 /*    std::vector<size_t> candidate_list(instance.get_num_flights());*/

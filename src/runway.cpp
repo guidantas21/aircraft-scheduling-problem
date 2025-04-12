@@ -53,13 +53,17 @@ bool Runway::test_feasibility(const Instance &instance) const {
     return test_sequence_feasibility(instance) and test_penalty(instance);
 }
 
-void Runway::print() const {
-    std::cout << "Flights: ";
-
+void Runway::print_runway() const {
     for (const auto &flight : sequence) {
         std::cout << flight.get().get_id() + 1 << ' ';
     }
     std::cout << '\n';
+}
+
+void Runway::print() const {
+    std::cout << "Flights: ";
+
+    print_runway();
 
     std::cout << "Prefix Penalty: ";
     for (const auto &penalty : prefix_penalty) {

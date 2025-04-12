@@ -78,3 +78,10 @@ void Solution::print() const {
     }
     std::cout << "Objective: " << objective << '\n';
 }
+
+void Solution::print_runway() const {
+    for (const Runway &runway : runways) {
+        runway.print_runway();
+        std::cout << '\n';
+    }
+}

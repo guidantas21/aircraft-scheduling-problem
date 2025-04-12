@@ -25,6 +25,8 @@ struct Runway {
 
     bool test_feasibility(const Instance &instance) const;
 
+    void print_runway() const;
+
     void print() const;
 };
 
