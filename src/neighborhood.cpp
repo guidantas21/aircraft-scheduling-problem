@@ -255,3 +255,113 @@ void ASP::best_improvement_inter_swap(Solution &solution) {
         assert(solution.test_feasibility(m_instance));
     }
 }
+
+void ASP::temp_apply_intra_move(Solution &solution, size_t flight_i, size_t flight_j, size_t runway_i) {
+    auto &sequence = solution.runways[runway_i].sequence;
+    if (flight_i < flight_j) {
+        std::rotate(sequence.begin() + static_cast<long>(flight_i), sequence.begin() + static_cast<long>(flight_i) + 1,
+                    sequence.begin() + static_cast<long>(flight_j) + 1);
+    }
+    if (flight_i > flight_j) {
+        std::rotate(sequence.begin() + static_cast<long>(flight_j), sequence.begin() + static_cast<long>(flight_i),
+                    sequence.begin() + static_cast<long>(flight_i) + 1);
+    }
+    solution.update_objective(m_instance);
+    assert(solution.test_feasibility(m_instance));
+}
+
+void ASP::best_improvement_intra_move(Solution &solution) {
+    size_t best_flight_i = 0;
+    size_t best_flight_j = 0;
+    size_t best_runway_i = 0;
+
+    int best_delta = 0;
+
+    for (size_t runway_i = 0; runway_i < m_instance.get_num_runways(); ++runway_i) {
+        int sequence_size = static_cast<int>(solution.runways[runway_i].sequence.size());
+
+        for (int flight_i = 0; flight_i < sequence_size; ++flight_i) {
+            uint32_t original_objective = solution.objective;
+            // move to posisitions before the current position
+            for (int flight_j = flight_i - 1; flight_j >= 0; --flight_j) {
+                temp_apply_intra_move(solution, flight_i, flight_j, runway_i);
+
+                int delta = static_cast<int>(solution.objective) - static_cast<int>(original_objective);
+
+                temp_apply_intra_move(solution, flight_j, flight_i, runway_i); // NOLINT
+
+                assert(solution.objective == original_objective);
+
+                if (delta < best_delta) {
+                    std::cout << "Improved\n";
+                    best_delta = delta;
+                    best_flight_i = flight_i;
+                    best_flight_j = flight_j;
+                    best_runway_i = runway_i;
+                }
+            }
+
+            // move to positions after the current position
+            for (int flight_j = flight_i + 1; flight_j < sequence_size; ++flight_j) {
+                temp_apply_intra_move(solution, flight_i, flight_j, runway_i);
+
+                int delta = static_cast<int>(solution.objective) - static_cast<int>(original_objective);
+
+                temp_apply_intra_move(solution, flight_j, flight_i, runway_i); // NOLINT
+
+                assert(solution.objective == original_objective);
+
+                if (delta < best_delta) {
+
+                    std::cout << "Improved\n";
+                    best_delta = delta;
+                    best_flight_i = flight_i;
+                    best_flight_j = flight_j;
+                    best_runway_i = runway_i;
+                }
+            }
+        }
+    }
+    if (best_delta < 0) {
+        Runway &best_runway = solution.runways[best_runway_i];
+
+        if (best_flight_i < best_flight_j) {
+            std::rotate(best_runway.sequence.begin() + static_cast<long>(best_flight_i),
+                        best_runway.sequence.begin() + static_cast<long>(best_flight_i) + 1,
+                        best_runway.sequence.begin() + static_cast<long>(best_flight_j) + 1);
+        }
+        if (best_flight_i > best_flight_j) {
+            std::rotate(best_runway.sequence.begin() + static_cast<long>(best_flight_j),
+                        best_runway.sequence.begin() + static_cast<long>(best_flight_i),
+                        best_runway.sequence.begin() + static_cast<long>(best_flight_i) + 1);
+        }
+
+        size_t update_initial_i = std::min(best_flight_i, best_flight_j);
+
+        if (update_initial_i == 0) {
+            best_runway.sequence.front().get().start_time = best_runway.sequence.front().get().get_release_time();
+            best_runway.prefix_penalty[1] = 0;
+            ++update_initial_i;
+        }
+
+        for (size_t flight_i = update_initial_i; flight_i < best_runway.sequence.size(); ++flight_i) {
+            Flight &current_flight = best_runway.sequence[flight_i].get();
+            Flight &prev_flight = best_runway.sequence[flight_i - 1].get();
+
+            uint32_t earliest = prev_flight.start_time + prev_flight.get_runway_occupancy_time() +
+                                m_instance.get_separation_time(prev_flight.get_id(), current_flight.get_id());
+
+            current_flight.start_time = std::max(current_flight.get_release_time(), earliest);
+
+            uint32_t delay = current_flight.start_time - current_flight.get_release_time();
+            uint32_t flight_penalty = current_flight.get_delay_penalty() * delay;
+
+            best_runway.prefix_penalty[flight_i + 1] = best_runway.prefix_penalty[flight_i] + flight_penalty;
+
+            std::cout << best_runway.prefix_penalty[flight_i + 1] << '\n';
+        }
+        best_runway.penalty += best_delta;
+        solution.objective += best_delta;
+    }
+    assert(solution.test_feasibility(m_instance));
+}
