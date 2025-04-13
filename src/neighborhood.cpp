@@ -266,8 +266,6 @@ void ASP::temp_apply_intra_move(Solution &solution, size_t flight_i, size_t flig
         std::rotate(sequence.begin() + static_cast<long>(flight_j), sequence.begin() + static_cast<long>(flight_i),
                     sequence.begin() + static_cast<long>(flight_i) + 1);
     }
-    solution.update_objective(m_instance);
-    assert(solution.test_feasibility(m_instance));
 }
 
 void ASP::best_improvement_intra_move(Solution &solution) {
@@ -278,22 +276,51 @@ void ASP::best_improvement_intra_move(Solution &solution) {
     int best_delta = 0;
 
     for (size_t runway_i = 0; runway_i < m_instance.get_num_runways(); ++runway_i) {
-        int sequence_size = static_cast<int>(solution.runways[runway_i].sequence.size());
+        const int sequence_size = static_cast<int>(solution.runways[runway_i].sequence.size());
+        const uint32_t original_penalty = static_cast<int>(solution.runways[runway_i].penalty);
 
         for (int flight_i = 0; flight_i < sequence_size; ++flight_i) {
-            uint32_t original_objective = solution.objective;
             // move to posisitions before the current position
             for (int flight_j = flight_i - 1; flight_j >= 0; --flight_j) {
                 temp_apply_intra_move(solution, flight_i, flight_j, runway_i);
 
-                int delta = static_cast<int>(solution.objective) - static_cast<int>(original_objective);
+                // The penalty before the flight j does not change, so we retrieve it from penalty prefix vector
+                const uint32_t penalty_before_flight_j = solution.runways[runway_i].prefix_penalty[flight_j];
+
+                uint32_t new_penalty = penalty_before_flight_j;
+                uint32_t start_time = 0;
+                int initial_k = flight_j;
+
+                if (flight_j == 0) {
+                    start_time = solution.runways[runway_i].sequence.front().get().get_release_time();
+                    ++initial_k;
+                } else {
+                    start_time = solution.runways[runway_i].sequence[flight_j - 1].get().start_time;
+                }
+
+                for (int flight_k = initial_k; flight_k < sequence_size; ++flight_k) {
+                    const Flight &current_flight = solution.runways[runway_i].sequence[flight_k].get();
+                    const Flight &prev_flight = solution.runways[runway_i].sequence[flight_k - 1].get();
+
+                    const uint32_t earliest =
+                        start_time + prev_flight.get_runway_occupancy_time() +
+                        m_instance.get_separation_time(prev_flight.get_id(), current_flight.get_id());
+
+                    start_time = std::max(earliest, current_flight.get_release_time());
+
+                    const uint32_t delay = start_time - current_flight.get_release_time();
+
+                    new_penalty += current_flight.get_delay_penalty() * delay;
+                }
+
+                const int delta = static_cast<int>(new_penalty) - static_cast<int>(original_penalty);
+
+                assert(solution.runways[runway_i].calculate_total_penalty(m_instance) ==
+                       (solution.runways[runway_i].penalty + delta));
 
                 temp_apply_intra_move(solution, flight_j, flight_i, runway_i); // NOLINT
 
-                assert(solution.objective == original_objective);
-
                 if (delta < best_delta) {
-                    std::cout << "Improved\n";
                     best_delta = delta;
                     best_flight_i = flight_i;
                     best_flight_j = flight_j;
@@ -302,18 +329,45 @@ void ASP::best_improvement_intra_move(Solution &solution) {
             }
 
             // move to positions after the current position
+            const uint32_t penalty_before_flight_i = solution.runways[runway_i].prefix_penalty[flight_i];
+
             for (int flight_j = flight_i + 1; flight_j < sequence_size; ++flight_j) {
                 temp_apply_intra_move(solution, flight_i, flight_j, runway_i);
 
-                int delta = static_cast<int>(solution.objective) - static_cast<int>(original_objective);
+                uint32_t new_penalty = penalty_before_flight_i;
+                uint32_t start_time = 0;
+                int initial_k = flight_i;
+
+                if (flight_i == 0) {
+                    start_time = solution.runways[runway_i].sequence.front().get().get_release_time();
+                    ++initial_k;
+                } else {
+                    start_time = solution.runways[runway_i].sequence[flight_i - 1].get().start_time;
+                }
+
+                for (int flight_k = initial_k; flight_k < sequence_size; ++flight_k) {
+                    const Flight &current_flight = solution.runways[runway_i].sequence[flight_k].get();
+                    const Flight &prev_flight = solution.runways[runway_i].sequence[flight_k - 1].get();
+
+                    const uint32_t earliest =
+                        start_time + prev_flight.get_runway_occupancy_time() +
+                        m_instance.get_separation_time(prev_flight.get_id(), current_flight.get_id());
+
+                    start_time = std::max(earliest, current_flight.get_release_time());
+
+                    const uint32_t delay = start_time - current_flight.get_release_time();
+
+                    new_penalty += current_flight.get_delay_penalty() * delay;
+                }
+
+                const int delta = static_cast<int>(new_penalty) - static_cast<int>(original_penalty);
+
+                assert(solution.runways[runway_i].calculate_total_penalty(m_instance) ==
+                       (solution.runways[runway_i].penalty + delta));
 
                 temp_apply_intra_move(solution, flight_j, flight_i, runway_i); // NOLINT
 
-                assert(solution.objective == original_objective);
-
                 if (delta < best_delta) {
-
-                    std::cout << "Improved\n";
                     best_delta = delta;
                     best_flight_i = flight_i;
                     best_flight_j = flight_j;
