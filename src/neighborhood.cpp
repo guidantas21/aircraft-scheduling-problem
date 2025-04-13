@@ -411,8 +411,6 @@ void ASP::best_improvement_intra_move(Solution &solution) {
             uint32_t flight_penalty = current_flight.get_delay_penalty() * delay;
 
             best_runway.prefix_penalty[flight_i + 1] = best_runway.prefix_penalty[flight_i] + flight_penalty;
-
-            std::cout << best_runway.prefix_penalty[flight_i + 1] << '\n';
         }
         best_runway.penalty += best_delta;
         solution.objective += best_delta;
