@@ -12,19 +12,19 @@ uint32_t Runway::calculate_total_penalty(const Instance &instance) const {
     if (sequence.empty()) {
         return 0;
     }
-    uint32_t current_time = sequence.front().get().get_release_time();
+    uint32_t start_time = sequence.front().get().get_release_time();
+    for (size_t i = 1; i < sequence.size(); ++i) {
+        Flight &prev_flight = sequence[i - 1].get();
+        Flight &current_flight = sequence[i].get();
 
-    for (size_t i = 0; i < sequence.size() - 1; ++i) {
-        uint32_t earliest_possible =
-            current_time + sequence[i].get().get_runway_occupancy_time() +
-            instance.get_separation_time(sequence[i].get().get_id(), sequence[i + 1].get().get_id());
-        uint32_t release_time = sequence[i + 1].get().get_release_time();
+        uint32_t earliest_possible = start_time + prev_flight.get_runway_occupancy_time() +
+                                     instance.get_separation_time(prev_flight.get_id(), current_flight.get_id());
 
-        current_time = std::max(release_time, earliest_possible);
+        start_time = std::max(current_flight.get_release_time(), earliest_possible);
 
-        uint32_t delay = current_time - release_time;
+        uint32_t delay = start_time - current_flight.get_release_time();
 
-        real_penalty += sequence[i + 1].get().get_delay_penalty() * delay;
+        real_penalty += current_flight.get_delay_penalty() * delay;
     }
     return real_penalty;
 }
