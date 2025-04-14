@@ -28,6 +28,10 @@ int main(int argc, char *argv[]) {
 
     ASP asp(instance);
 
+    Solution s1 = asp.parallel_GILS_VND(10, 10, 0.25);
+
+    s1.print();
+
     /*std::cout << "\n>> Constructive only:\n";*/
 
     /*Solution s1 = asp.randomized_greedy(0);*/
@@ -45,16 +49,6 @@ int main(int argc, char *argv[]) {
     /*Solution grasp_vnd = asp.GRASP_VND(10);*/
     /**/
     /*grasp_vnd.print();*/
-
-    std::cout << "\n Parallel GILS-VND\n";
-
-    Solution parallel_gils_vnd = asp.parallel_GILS_VND(10, 10, 0.25);
-
-    std::cout << "\n GILS-VND\n";
-
-    Solution gils_vnd = asp.GILS_VND(10, 10, 0.25);
-
-    gils_vnd.print();
 
     return 0;
 }

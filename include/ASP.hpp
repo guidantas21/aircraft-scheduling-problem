@@ -25,11 +25,12 @@ public:
 
     void VND(Solution &solution); // NOLINT
 
-    Solution randomized_greedy(float alpha);
+    Solution randomized_greedy(float alpha, std::vector<Flight> &flights);
 
     Solution GRASP_VND(size_t max_iterations); // NOLINT
 
-    Solution GILS_VND(size_t max_iterations, size_t max_ils_iterations, float alpha); // NOLINT
+    Solution parallel_GILS_VND(size_t max_iterations, size_t max_ils_iterations, float alpha); // NOLINT
+    Solution GILS_VND(size_t max_iterations, size_t max_ils_iterations, float alpha);          // NOLINT
 
     ASP(Instance &instance);
 };

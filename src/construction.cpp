@@ -19,14 +19,14 @@ struct Insertion {
         : candidate_i(candidate_i), start_time(start_time), penalty(penalty), runway(runway) {}
 };
 
-Solution ASP::randomized_greedy(const float alpha) {
+Solution ASP::randomized_greedy(const float alpha, std::vector<Flight> &flights) {
     Solution solution(m_instance);
 
     std::vector<std::reference_wrapper<Flight>> candidate_list;
     candidate_list.reserve(m_instance.get_num_flights());
 
     for (size_t i = 0; i < m_instance.get_num_flights(); ++i) {
-        candidate_list.emplace_back(m_flights[i]);
+        candidate_list.emplace_back(flights[i]);
     }
     std::vector<size_t> candidates_position(m_instance.get_num_flights());
 
@@ -93,6 +93,8 @@ Solution ASP::randomized_greedy(const float alpha) {
 
         candidate_list.erase(candidate_list.begin() + static_cast<long>(selected_insertion.candidate_i));
     }
+#pragma omp critical
+
     assert(solution.test_feasibility(m_instance));
 
     return solution;

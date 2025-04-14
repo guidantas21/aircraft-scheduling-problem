@@ -32,5 +32,5 @@ void ASP::VND(Solution &solution) { // NOLINT
             ++current_neighborhood;
         }
     }
-    assert(best_solution.test_feasibility(m_instance));
+    assert(solution.test_feasibility(m_instance));
 }
