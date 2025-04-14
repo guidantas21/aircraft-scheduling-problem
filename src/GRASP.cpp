@@ -9,12 +9,12 @@ Solution ASP::GRASP_VND(const size_t max_iterations) {
     best_solution.objective = std::numeric_limits<uint32_t>::max();
 
     for (size_t iteration = 0; iteration < max_iterations; ++iteration) {
-        Solution initial_solution = randomized_greedy(0.01);
+        Solution solution = randomized_greedy(0.01);
 
-        Solution vnd_solution = VND(initial_solution);
+        VND(solution);
 
-        if (vnd_solution.objective < best_solution.objective) {
-            best_solution = vnd_solution;
+        if (solution.objective < best_solution.objective) {
+            best_solution = solution;
         }
     }
     assert(best_solution.test_feasibility(m_instance));

@@ -34,7 +34,8 @@ sanitizers_debug_flags = [
 
 optimization_flags = [
   '-O3',
-  '-DNDEBUG'
+  '-DNDEBUG',
+  '-fopenmp',
 ]
 
 

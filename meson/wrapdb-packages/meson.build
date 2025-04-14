@@ -16,6 +16,9 @@ incdir_deps = []
 argparse_dep = dependency('argparse', required: true)
 dependencies += argparse_dep
 
+openmp_dep = dependency('openmp', required: true)
+dependencies += openmp_dep
+
 ## Package name: google_benchmark -----
 # benchmark_dep = dependency('benchmark' , required: true)
 # benchmark_main_dep = dependency('benchmark-main', required: true)
