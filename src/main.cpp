@@ -42,9 +42,15 @@ int main(int argc, char *argv[]) {
 
     std::cout << "\n>> GRASP-VND:\n";
 
-    Solution grasp_vnd = asp.GRASP_VND(1000);
+    Solution grasp_vnd = asp.GRASP_VND(10);
 
     grasp_vnd.print();
+
+    std::cout << "\n GILS-VND\n";
+
+    Solution gils_vnd = asp.GILS_VND(10, 10, 0.025);
+
+    gils_vnd.print();
 
     return 0;
 }

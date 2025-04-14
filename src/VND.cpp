@@ -22,10 +22,10 @@ Solution ASP::VND(Solution &solution) { // NOLINT
             }
             break;
         case Neighborhood::InterSwap:
-            best_improvement_inter_swap(best_solution);
+            best_improvement_inter_swap(solution);
             break;
         case Neighborhood::IntraMove:
-            best_improvement_intra_move(best_solution);
+            best_improvement_intra_move(solution);
             break;
         }
         if (solution.objective < best_solution.objective) {
