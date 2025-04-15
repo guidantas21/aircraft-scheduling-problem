@@ -17,18 +17,24 @@ private:
     std::vector<Flight> m_flights;
 
 public:
-    bool best_improvement_intra_swap(Solution &solution);
-    bool best_improvement_inter_swap(Solution &solution);
-    bool best_improvement_intra_move(Solution &solution);
-
-    void temp_apply_intra_move(Solution &solution, size_t flight_i, size_t flight_j, size_t runway_i);
-
-    void VND(Solution &solution); // NOLINT
+    // Constructive heuristics
 
     Solution randomized_greedy(float alpha, std::vector<Flight> &flights);
 
-    Solution GRASP_VND(size_t max_iterations); // NOLINT
+    // Local search procedures
 
+    void VND(Solution &solution); // NOLINT
+
+    // Neighborhoods
+
+    bool best_improvement_intra_swap(Solution &solution);
+    bool best_improvement_inter_swap(Solution &solution);
+    void temp_apply_intra_move(Solution &solution, size_t flight_i, size_t flight_j, size_t runway_i);
+    bool best_improvement_intra_move(Solution &solution);
+
+    // Methaheuristics
+
+    Solution GRASP_VND(size_t max_iterations);                                                 // NOLINT
     Solution parallel_GILS_VND(size_t max_iterations, size_t max_ils_iterations, float alpha); // NOLINT
     Solution GILS_VND(size_t max_iterations, size_t max_ils_iterations, float alpha);          // NOLINT
 

@@ -3,6 +3,7 @@
 #include <csignal>
 #include <cstddef>
 #include <cstdint>
+#include <iostream>
 #include <vector>
 
 enum class Neighborhood : uint8_t { IntraSwap, InterSwap, IntraMove };

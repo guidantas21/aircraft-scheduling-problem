@@ -93,7 +93,6 @@ Solution ASP::randomized_greedy(const float alpha, std::vector<Flight> &flights)
 
         candidate_list.erase(candidate_list.begin() + static_cast<long>(selected_insertion.candidate_i));
     }
-#pragma omp critical
 
     assert(solution.test_feasibility(m_instance));
 

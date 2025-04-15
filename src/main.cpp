@@ -28,7 +28,7 @@ int main(int argc, char *argv[]) {
 
     ASP asp(instance);
 
-    Solution s1 = asp.parallel_GILS_VND(10, 10, 0.25);
+    Solution s1 = asp.GILS_VND(1, 1, 0.05);
 
     s1.print();
 
