@@ -19,14 +19,14 @@ struct Insertion {
         : candidate_i(candidate_i), start_time(start_time), penalty(penalty), runway(runway) {}
 };
 
-Solution ASP::randomized_greedy(const float alpha) {
+Solution ASP::randomized_greedy(const float alpha, std::vector<Flight> &flights) {
     Solution solution(m_instance);
 
     std::vector<std::reference_wrapper<Flight>> candidate_list;
     candidate_list.reserve(m_instance.get_num_flights());
 
     for (size_t i = 0; i < m_instance.get_num_flights(); ++i) {
-        candidate_list.emplace_back(m_flights[i]);
+        candidate_list.emplace_back(flights[i]);
     }
     std::vector<size_t> candidates_position(m_instance.get_num_flights());
 
@@ -78,7 +78,7 @@ Solution ASP::randomized_greedy(const float alpha) {
         std::uniform_int_distribution<size_t> dist_selection(
             0, std::ceil(alpha * static_cast<float>(possible_insertions.size())));
 
-        Insertion selected_insertion = possible_insertions[dist_selection(utils::engine)];
+        Insertion selected_insertion = possible_insertions[dist_selection(m_generator)];
         Flight &selected_candidate = candidate_list[selected_insertion.candidate_i].get();
 
         selected_candidate.start_time = selected_insertion.start_time;
@@ -93,6 +93,7 @@ Solution ASP::randomized_greedy(const float alpha) {
 
         candidate_list.erase(candidate_list.begin() + static_cast<long>(selected_insertion.candidate_i));
     }
+
     assert(solution.test_feasibility(m_instance));
 
     return solution;

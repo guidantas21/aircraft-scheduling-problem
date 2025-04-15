@@ -9,6 +9,8 @@ sources = files(
   'ASP.cpp',
   'VND.cpp',
   'GRASP.cpp',
+  'GILS.cpp',
+  'utils.cpp',
 )
 
 incdir = include_directories('../include')
