@@ -769,8 +769,8 @@ bool ASP::best_improvement_inter_move(Solution &solution) {
                         uint32_t delay = 0;
 
                         earliest_possible =
-                            current_time + poped_flight.get_runway_occupancy_time() +
-                            m_instance.get_separation_time(poped_flight.get_id(), solution.runways[runway_d].sequence[0].get().get_id());
+                            current_time + removed_flight.get_runway_occupancy_time() +
+                            m_instance.get_separation_time(removed_flight.get_id(), solution.runways[runway_d].sequence[0].get().get_id());
                         release_time = solution.runways[runway_d].sequence[0].get().get_release_time();
 
                         current_time = std::max(release_time, earliest_possible);
@@ -815,8 +815,8 @@ bool ASP::best_improvement_inter_move(Solution &solution) {
 
                         earliest_possible =
                             current_time + solution.runways[runway_d].sequence[i].get().get_runway_occupancy_time() +
-                            m_instance.get_separation_time(solution.runways[runway_d].sequence[i].get().get_id(), poped_flight.get_id());
-                        release_time = poped_flight.get_release_time();
+                            m_instance.get_separation_time(solution.runways[runway_d].sequence[i].get().get_id(), removed_flight.get_id());
+                        release_time = removed_flight.get_release_time();
 
                         current_time = std::max(release_time, earliest_possible);
 
@@ -836,8 +836,8 @@ bool ASP::best_improvement_inter_move(Solution &solution) {
                             if (i == position_d - 1) {
                                 earliest_possible =
                                     current_time + solution.runways[runway_d].sequence[i].get().get_runway_occupancy_time() +
-                                    m_instance.get_separation_time(solution.runways[runway_d].sequence[i].get().get_id(), poped_flight.get_id());
-                                release_time = poped_flight.get_release_time();
+                                    m_instance.get_separation_time(solution.runways[runway_d].sequence[i].get().get_id(), removed_flight.get_id());
+                                release_time = removed_flight.get_release_time();
 
                                 current_time = std::max(release_time, earliest_possible);
 
@@ -846,8 +846,8 @@ bool ASP::best_improvement_inter_move(Solution &solution) {
                                 destiny_new_penalty += removed_flight.get_delay_penalty() * delay;
 
                                 earliest_possible =
-                                    current_time + poped_flight.get_runway_occupancy_time() +
-                                    m_instance.get_separation_time(poped_flight.get_id(), solution.runways[runway_d].sequence[i + 1].get().get_id());
+                                    current_time + removed_flight.get_runway_occupancy_time() +
+                                    m_instance.get_separation_time(removed_flight.get_id(), solution.runways[runway_d].sequence[i + 1].get().get_id());
                                 release_time = solution.runways[runway_d].sequence[i + 1].get().get_release_time();
 
                                 current_time = std::max(release_time, earliest_possible);
@@ -875,14 +875,14 @@ bool ASP::best_improvement_inter_move(Solution &solution) {
 
                     penalty_delta = origin_penalty_reduction + destiny_penalty_delta;
 
-                    std::cout << "Delta: " << penalty_delta << std::endl;
+                    // std::cout << "Delta: " << penalty_delta << std::endl;
 
                     // Check if this move results in the best improvement so far
                     if (penalty_delta < 0 && penalty_delta < best_delta) {
                         improved = true;
-                        std::cout << "Melhorou!\n";
-                        std::cout << "Pista: " << runway_o+1 << " | Voo " << flight_o << std::endl;
-                        std::cout << "Pista: " << runway_d+1 << " | Voo " << position_d << std::endl << std::endl;
+                        // std::cout << "Melhorou!\n";
+                        // std::cout << "Pista: " << runway_o+1 << " | Voo " << flight_o << std::endl;
+                        // std::cout << "Pista: " << runway_d+1 << " | Voo " << position_d << std::endl << std::endl;
                         
                         best_delta = penalty_delta;
                         best_o = std::make_pair(runway_o, flight_o);
@@ -916,20 +916,20 @@ bool ASP::best_improvement_inter_move(Solution &solution) {
 
         
 
-        std::cout << "Old Solution objective: " << solution.objective << std::endl;
-        std::cout << "best delta: " << best_delta << std::endl;
+        // std::cout << "Old Solution objective: " << solution.objective << std::endl;
+        // std::cout << "best delta: " << best_delta << std::endl;
 
         solution.runways[best_d.first].penalty += best_destiny_penalty_delta;
         solution.runways[best_o.first].penalty += best_origin_penalty_reduction;
         solution.objective += best_delta;
 
-        std::cout << "Solution (wrong) runway_o: " << solution.runways[best_o.first].penalty << std::endl;
-        std::cout << "Copy solution (right) runway_o: " << solution_copy.runways[best_o.first].penalty << std::endl;
-        std::cout << "Solution (wrong) runway_d: " << solution.runways[best_d.first].penalty << std::endl;
-        std::cout << "Copy solution (right) runway_d: " << solution_copy.runways[best_d.first].penalty << std::endl;
+        // std::cout << "Solution (wrong) runway_o: " << solution.runways[best_o.first].penalty << std::endl;
+        // std::cout << "Copy solution (right) runway_o: " << solution_copy.runways[best_o.first].penalty << std::endl;
+        // std::cout << "Solution (wrong) runway_d: " << solution.runways[best_d.first].penalty << std::endl;
+        // std::cout << "Copy solution (right) runway_d: " << solution_copy.runways[best_d.first].penalty << std::endl;
 
-        std::cout << "Solution (wrong) objective: " << solution.objective << std::endl;
-        std::cout << "Copy solution (right) objective: " << solution_copy.objective << std::endl;
+        // std::cout << "Solution (wrong) objective: " << solution.objective << std::endl;
+        // std::cout << "Copy solution (right) objective: " << solution_copy.objective << std::endl;
         
 
         assert(solution.test_feasibility(m_instance));

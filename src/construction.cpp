@@ -1,7 +1,6 @@
 #include "ASP.hpp"
 
 #include "flight.hpp"
-#include "utils.hpp"
 
 #include <algorithm>
 #include <cassert>
