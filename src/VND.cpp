@@ -14,25 +14,35 @@ Solution ASP::VND(Solution &solution) { // NOLINT
 
     Solution best_solution = solution;
 
-    while (current_neighborhood < neighborhoods.size()) {
-        switch (neighborhoods[current_neighborhood]) {
-        case Neighborhood::IntraSwap:
-            for (size_t runway_i = 0; runway_i < solution.runways.size(); ++runway_i) {
-                best_improvement_intra_swap(solution, runway_i);
-            }
-            break;
-        case Neighborhood::InterMove:
-            best_improvement_inter_move(solution);
-        }
+    // while (current_neighborhood < neighborhoods.size()) {
+    //     switch (neighborhoods[current_neighborhood]) {
+    //     case Neighborhood::IntraSwap:
+    //         for (size_t runway_i = 0; runway_i < solution.runways.size(); ++runway_i) {
+    //             best_improvement_intra_swap(solution, runway_i);
+    //         }
+    //         break;
+    //     case Neighborhood::InterMove:
+    //         best_improvement_inter_move(solution);
+    //     }
         
 
-        if (solution.objective < best_solution.objective) {
-            current_neighborhood = 0;
-            best_solution = solution;
-        } else {
-            ++current_neighborhood;
-        }
+    //     if (solution.objective < best_solution.objective) {
+    //         current_neighborhood = 0;
+    //         best_solution = solution;
+    //     } else {
+    //         ++current_neighborhood;
+    //     }
+    // }
+
+    //debug
+    //---------------------------------------------------------//
+    best_improvement_inter_move(solution);
+
+    if (solution.objective < best_solution.objective) {
+        current_neighborhood = 0;
+        best_solution = solution;
     }
+    //---------------------------------------------------------//
 
     assert(best_solution.test_feasibility(m_instance));
 

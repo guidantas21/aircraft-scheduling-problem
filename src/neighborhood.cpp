@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <functional>
+#include <iostream>
 
 /**
  * @brief Performs an intra-runway swap to find the best improvement in penalty for a given runway.
@@ -245,52 +246,52 @@ void ASP::best_improvement_inter_move(Solution &solution) {
 
                         earliest_possible =
                             current_time + poped_flight.get_runway_occupancy_time() +
-                            m_instance.get_separation_time(poped_flight.get_id(), solution.runways[runway_o].sequence[0].get().get_id());
-                        release_time = solution.runways[runway_o].sequence[0].get().get_release_time();
+                            m_instance.get_separation_time(poped_flight.get_id(), solution.runways[runway_d].sequence[0].get().get_id());
+                        release_time = solution.runways[runway_d].sequence[0].get().get_release_time();
 
                         current_time = std::max(release_time, earliest_possible);
 
                         delay = current_time - release_time;
 
-                        destiny_new_penalty += solution.runways[runway_o].sequence[0].get().get_delay_penalty() * delay;     
+                        destiny_new_penalty += solution.runways[runway_d].sequence[0].get().get_delay_penalty() * delay;     
 
-                        for(size_t i = 0; i < solution.runways[runway_o].sequence.size()-1; i++){
+                        for(size_t i = 0; i < solution.runways[runway_d].sequence.size()-1; i++){
                             earliest_possible =
-                                current_time + solution.runways[runway_o].sequence[i].get().get_runway_occupancy_time() +
-                                m_instance.get_separation_time(solution.runways[runway_o].sequence[i].get().get_id(), solution.runways[runway_o].sequence[i + 1].get().get_id());
-                            release_time = solution.runways[runway_o].sequence[i + 1].get().get_release_time();
+                                current_time + solution.runways[runway_d].sequence[i].get().get_runway_occupancy_time() +
+                                m_instance.get_separation_time(solution.runways[runway_d].sequence[i].get().get_id(), solution.runways[runway_d].sequence[i + 1].get().get_id());
+                            release_time = solution.runways[runway_d].sequence[i + 1].get().get_release_time();
 
                             current_time = std::max(release_time, earliest_possible);
 
                             delay = current_time - release_time;
 
-                            destiny_new_penalty += solution.runways[runway_o].sequence[i + 1].get().get_delay_penalty() * delay;                          
+                            destiny_new_penalty += solution.runways[runway_d].sequence[i + 1].get().get_delay_penalty() * delay;                          
                         }
                     }else if(position_d == solution.runways[runway_d].sequence.size()){
-                        current_time = solution.runways[runway_o].sequence[0].get().get_release_time();
+                        current_time = solution.runways[runway_d].sequence[0].get().get_release_time();
 
                         uint32_t earliest_possible;
                         uint32_t release_time;
                         uint32_t delay;
 
                         size_t i;
-                        for(i = 0; i < solution.runways[runway_o].sequence.size()-1; i++){
+                        for(i = 0; i < solution.runways[runway_d].sequence.size()-1; i++){
 
                             earliest_possible =
-                                current_time + solution.runways[runway_o].sequence[i].get().get_runway_occupancy_time() +
-                                m_instance.get_separation_time(solution.runways[runway_o].sequence[i].get().get_id(), solution.runways[runway_o].sequence[i + 1].get().get_id());
-                            release_time = solution.runways[runway_o].sequence[i + 1].get().get_release_time();
+                                current_time + solution.runways[runway_d].sequence[i].get().get_runway_occupancy_time() +
+                                m_instance.get_separation_time(solution.runways[runway_d].sequence[i].get().get_id(), solution.runways[runway_d].sequence[i + 1].get().get_id());
+                            release_time = solution.runways[runway_d].sequence[i + 1].get().get_release_time();
 
                             current_time = std::max(release_time, earliest_possible);
 
                             delay = current_time - release_time;
 
-                            destiny_new_penalty += solution.runways[runway_o].sequence[i + 1].get().get_delay_penalty() * delay;                            
+                            destiny_new_penalty += solution.runways[runway_d].sequence[i + 1].get().get_delay_penalty() * delay;                            
                         }
 
                         earliest_possible =
-                            current_time + solution.runways[runway_o].sequence[i].get().get_runway_occupancy_time() +
-                            m_instance.get_separation_time(solution.runways[runway_o].sequence[i].get().get_id(), poped_flight.get_id());
+                            current_time + solution.runways[runway_d].sequence[i].get().get_runway_occupancy_time() +
+                            m_instance.get_separation_time(solution.runways[runway_d].sequence[i].get().get_id(), poped_flight.get_id());
                         release_time = poped_flight.get_release_time();
 
                         current_time = std::max(release_time, earliest_possible);
@@ -300,18 +301,18 @@ void ASP::best_improvement_inter_move(Solution &solution) {
                         destiny_new_penalty += poped_flight.get_delay_penalty() * delay;
                     }else{
 
-                        current_time = solution.runways[runway_o].sequence[0].get().get_release_time();
+                        current_time = solution.runways[runway_d].sequence[0].get().get_release_time();
 
                         uint32_t earliest_possible;
                         uint32_t release_time;
                         uint32_t delay;
 
-                        for(size_t i = 0; i < solution.runways[runway_o].sequence.size()-1; i++){
+                        for(size_t i = 0; i < solution.runways[runway_d].sequence.size()-1; i++){
 
                             if(i == position_d-1){
                                 earliest_possible =
-                                    current_time + solution.runways[runway_o].sequence[i].get().get_runway_occupancy_time() +
-                                    m_instance.get_separation_time(solution.runways[runway_o].sequence[i].get().get_id(), poped_flight.get_id());
+                                    current_time + solution.runways[runway_d].sequence[i].get().get_runway_occupancy_time() +
+                                    m_instance.get_separation_time(solution.runways[runway_d].sequence[i].get().get_id(), poped_flight.get_id());
                                 release_time = poped_flight.get_release_time();
 
                                 current_time = std::max(release_time, earliest_possible);
@@ -322,25 +323,25 @@ void ASP::best_improvement_inter_move(Solution &solution) {
 
                                 earliest_possible =
                                     current_time + poped_flight.get_runway_occupancy_time() +
-                                    m_instance.get_separation_time(poped_flight.get_id(), solution.runways[runway_o].sequence[i + 1].get().get_id());
-                                release_time = solution.runways[runway_o].sequence[i + 1].get().get_release_time();
+                                    m_instance.get_separation_time(poped_flight.get_id(), solution.runways[runway_d].sequence[i + 1].get().get_id());
+                                release_time = solution.runways[runway_d].sequence[i + 1].get().get_release_time();
 
                                 current_time = std::max(release_time, earliest_possible);
 
                                 delay = current_time - release_time;
 
-                                destiny_new_penalty += solution.runways[runway_o].sequence[i + 1].get().get_delay_penalty() * delay;
+                                destiny_new_penalty += solution.runways[runway_d].sequence[i + 1].get().get_delay_penalty() * delay;
                             }else{
                                 earliest_possible =
-                                    current_time + solution.runways[runway_o].sequence[i].get().get_runway_occupancy_time() +
-                                    m_instance.get_separation_time(solution.runways[runway_o].sequence[i].get().get_id(), solution.runways[runway_o].sequence[i + 1].get().get_id());
-                                release_time = solution.runways[runway_o].sequence[i + 1].get().get_release_time();
+                                    current_time + solution.runways[runway_d].sequence[i].get().get_runway_occupancy_time() +
+                                    m_instance.get_separation_time(solution.runways[runway_d].sequence[i].get().get_id(), solution.runways[runway_d].sequence[i + 1].get().get_id());
+                                release_time = solution.runways[runway_d].sequence[i + 1].get().get_release_time();
 
                                 current_time = std::max(release_time, earliest_possible);
 
                                 delay = current_time - release_time;
 
-                                destiny_new_penalty += solution.runways[runway_o].sequence[i + 1].get().get_delay_penalty() * delay;
+                                destiny_new_penalty += solution.runways[runway_d].sequence[i + 1].get().get_delay_penalty() * delay;
                             }
                         }
                     }
@@ -349,9 +350,14 @@ void ASP::best_improvement_inter_move(Solution &solution) {
 
                     penalty_delta = origin_penalty_reduction + destiny_penalty_delta;
 
+                    std::cout << "Delta: " << penalty_delta << std::endl;
+
                     // Check if this move results in the best improvement so far
                     if (penalty_delta < 0 && penalty_delta < best_delta) {
                         improved = true;
+                        std::cout << "Melhorou!\n";
+                        std::cout << "Pista: " << runway_o+1 << " | Voo " << flight_o << std::endl;
+                        std::cout << "Pista: " << runway_d+1 << " | Voo " << position_d << std::endl << std::endl;
                         
                         best_delta = penalty_delta;
                         best_o = std::make_pair(runway_o, flight_o);
@@ -365,20 +371,45 @@ void ASP::best_improvement_inter_move(Solution &solution) {
     }
 
     if(improved){
+        std::cout << "Final:\n";
+        std::cout << "Pista: " << best_o.first+1 << " | Voo " << best_o.second << " | Delta: " << best_origin_penalty_reduction << std::endl;
+        std::cout << "Pista: " << best_d.first+1 << " | Voo " << best_d.second << " | Delta: " << best_destiny_penalty_delta << std::endl << std::endl;
+
 
         // Apply the best move found
         // Insert the poped flight
         solution.runways[best_d.first].sequence.insert(solution.runways[best_d.first].sequence.begin()+best_d.second, solution.runways[best_o.first].sequence[best_o.second]);
-        solution.runways[best_d.first].penalty += best_destiny_penalty_delta;
+        // solution.runways[best_d.first].penalty += best_destiny_penalty_delta;
 
         // Erase the poped flight
         for(int i = best_o.second; i < (int)solution.runways[best_o.first].sequence.size()-1; i++){
             solution.runways[best_o.first].sequence[i] = solution.runways[best_o.first].sequence[i+1];
         }solution.runways[best_o.first].sequence.pop_back();
-        solution.runways[best_o.first].penalty += best_origin_penalty_reduction;
+        // solution.runways[best_o.first].penalty += best_origin_penalty_reduction;
 
         
+        // solution.objective += best_delta;
+
+        Solution solution_copy = solution;
+        solution_copy.calculate_objective(m_instance);
+
+        
+
+        std::cout << "Old Solution objective: " << solution.objective << std::endl;
+        std::cout << "best delta: " << best_delta << std::endl;
+
+        solution.runways[best_d.first].penalty += best_destiny_penalty_delta;
+        solution.runways[best_o.first].penalty += best_origin_penalty_reduction;
         solution.objective += best_delta;
+
+        std::cout << "Solution (wrong) runway_o: " << solution.runways[best_o.first].penalty << std::endl;
+        std::cout << "Copy solution (right) runway_o: " << solution_copy.runways[best_o.first].penalty << std::endl;
+        std::cout << "Solution (wrong) runway_d: " << solution.runways[best_d.first].penalty << std::endl;
+        std::cout << "Copy solution (right) runway_d: " << solution_copy.runways[best_d.first].penalty << std::endl;
+
+        std::cout << "Solution (wrong) objective: " << solution.objective << std::endl;
+        std::cout << "Copy solution (right) objective: " << solution_copy.objective << std::endl;
+        
 
         assert(solution.test_feasibility(m_instance));
     }
