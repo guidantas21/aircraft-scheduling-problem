@@ -593,8 +593,9 @@ bool ASP::best_improvement_inter_move(Solution &solution) {
     }
 
     // Vars associated to origin runway penalty
-    size_t origin_new_penalty = 0;       // Penalty of the origin runway without the poped flight
-    size_t origin_penalty_reduction = 0; // Penalty associated by the selection of a flight to be poped
+    size_t origin_original_runway_penalty = 0;  // Penalty of the original sequence of a origin runway
+    size_t origin_new_penalty = 0;              // Penalty of the origin runway without the poped flight
+    int origin_penalty_reduction = 0;           // Penalty associated by the selection of a flight to be poped
 
     // Vars associated to destiny runway penalty
     size_t destiny_original_runway_penalty = 0; // Penalty of the original sequence of a origin runway
@@ -614,12 +615,11 @@ bool ASP::best_improvement_inter_move(Solution &solution) {
     // Iterate through all the runways
     for (size_t runway_o = 0; runway_o < solution.runways.size(); runway_o++) {
 
-        const uint32_t original_runway_i_penalty = solution.runways[runway_o].penalty;
-
         // Iterate through all the flights of the origin runway
         for (size_t flight_o = 0; flight_o < solution.runways[runway_o].sequence.size(); flight_o++) {
 
-            // calculates the value of penalty reduction
+            //calculates the value of penalty reduction
+            origin_original_runway_penalty = solution.runways[runway_o].penalty;
 
             // [(F_0, ..., F_{i-1}), (F_{i+1}, ..., F_{n-1})]
 
@@ -741,7 +741,7 @@ bool ASP::best_improvement_inter_move(Solution &solution) {
                 }
             }
 
-            origin_penalty_reduction = static_cast<int>(origin_new_penalty) - original_runway_i_penalty;
+            origin_penalty_reduction = static_cast<int>(origin_new_penalty) - origin_original_runway_penalty;
 
             Flight &removed_flight = solution.runways[runway_o].sequence[flight_o].get();
 
