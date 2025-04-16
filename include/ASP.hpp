@@ -31,6 +31,7 @@ public:
     bool best_improvement_inter_swap(Solution &solution);
     void temp_apply_intra_move(Solution &solution, size_t flight_i, size_t flight_j, size_t runway_i);
     bool best_improvement_intra_move(Solution &solution);
+    bool best_improvemente_inter_move(Solution &solution);
 
     // Methaheuristics
 
