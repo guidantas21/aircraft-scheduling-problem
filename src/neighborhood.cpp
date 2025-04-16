@@ -2,7 +2,6 @@
 
 #include <cassert>
 #include <functional>
-#include <iostream>
 
 /**
  * @brief Performs an intra-runway swap to find the best improvement in penalty for a given runway.
@@ -349,15 +348,10 @@ void ASP::best_improvement_inter_move(Solution &solution) {
                     destiny_penalty_delta = destiny_new_penalty - destiny_original_runway_penalty;
 
                     penalty_delta = origin_penalty_reduction + destiny_penalty_delta;
-                    
-                    // std::cout << "Delta: " << penalty_delta << std::endl;
 
                     // Check if this move results in the best improvement so far
                     if (penalty_delta < 0 && penalty_delta < best_delta) {
                         improved = true;
-                        // std::cout << "Melhorou!\n";
-                        // std::cout << "Pista: " << runway_o+1 << " | Voo " << flight_o << std::endl;
-                        // std::cout << "Pista: " << runway_d+1 << " | Voo " << position_d << std::endl << std::endl;
                         
                         best_delta = penalty_delta;
                         best_o = std::make_pair(runway_o, flight_o);
@@ -371,9 +365,6 @@ void ASP::best_improvement_inter_move(Solution &solution) {
     }
 
     if(improved){
-        // std::cout << "Final:\n";
-        // std::cout << "Pista: " << best_o.first+1 << " | Voo " << best_o.second << std::endl;
-        // std::cout << "Pista: " << best_d.first+1 << " | Voo " << best_d.second << std::endl << std::endl;
 
         // Apply the best move found
         // Insert the poped flight
