@@ -71,7 +71,7 @@ Solution ASP::GILS_VND(const size_t max_iterations, const size_t max_ils_iterati
     best_found.objective = std::numeric_limits<uint32_t>::max();
 
     for (size_t iteration = 0; iteration < max_iterations; ++iteration) {
-        Solution solution = randomized_greedy(alpha, m_flights);
+        Solution solution = randomized_greedy(alpha, flights);
 
         Solution local_best = solution;
 
