@@ -28,9 +28,11 @@ int main(int argc, char *argv[]) {
 
     ASP asp(instance);
 
-    Solution s1 = asp.GILS_VND(1, 1, 0.05);
-
+    // Solution s1 = asp.GILS_VND(1, 1, 0.05);
+    Solution s1 = asp.randomized_greedy(0, asp.flights);
     s1.print();
+    Solution s2 = asp.GILS_VND(100, 100, 0.05);
+    s2.print();
 
     /*std::cout << "\n>> Constructive only:\n";*/
 

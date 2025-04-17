@@ -16,6 +16,7 @@ public:
     size_t runway = 0;
     size_t position = 0;
 
+    Flight() = default;
     Flight(size_t id, uint32_t release_time, uint32_t taxing_time, uint32_t delay_penalty);
 
     inline size_t get_id() const { return m_id; }

@@ -14,9 +14,10 @@ private:
 
     static thread_local std::mt19937 m_generator;
 
-    std::vector<Flight> m_flights;
-
+    Flight m_dummy_flight;
 public:
+    std::vector<Flight> flights;
+    
     // Constructive heuristics
 
     Solution randomized_greedy(float alpha, std::vector<Flight> &flights);

@@ -9,7 +9,7 @@ Solution ASP::GRASP_VND(const size_t max_iterations) {
     best_solution.objective = std::numeric_limits<uint32_t>::max();
 
     for (size_t iteration = 0; iteration < max_iterations; ++iteration) {
-        Solution solution = randomized_greedy(0.01, m_flights);
+        Solution solution = randomized_greedy(0.01, flights);
 
         VND(solution);
 
