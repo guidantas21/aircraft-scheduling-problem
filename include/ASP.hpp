@@ -21,6 +21,7 @@ public:
     // Constructive heuristics
 
     Solution randomized_greedy(float alpha, std::vector<Flight> &flights);
+    Solution lowest_release_time_insertion(std::vector<Flight> &flights);
 
     // Local search procedures
 
