@@ -63,7 +63,7 @@ bool ASP::best_improvement_intra_swap(Solution &solution) {
                         (prev_start_time - current_flight.get_release_time()) * current_flight.get_delay_penalty();
                 }
 
-                if (penalty < original_penalty && original_penalty - penalty > delta) {
+                if (penalty < original_penalty && original_penalty - penalty >= delta) {
                     delta = original_penalty - penalty;
                     best_i = i;
                     best_j = j;
@@ -76,7 +76,7 @@ bool ASP::best_improvement_intra_swap(Solution &solution) {
     }
 
     // Apply the best swap found
-    if (delta > 0) {
+    if (delta >= 0 && best_i != best_j) {
         Runway &best_runway = solution.runways[best_runway_i];
 
         best_runway.sequence[best_i].get().position = best_j;
@@ -186,7 +186,7 @@ bool ASP::best_improvement_inter_swap(Solution &solution) {
                     }
 
                     if (penalty_i + penalty_j < original_penalty_i + original_penalty_j &&
-                        original_penalty_i + original_penalty_j - (penalty_i + penalty_j) > delta) {
+                        original_penalty_i + original_penalty_j - (penalty_i + penalty_j) >= delta) {
                         delta = original_penalty_i + original_penalty_j - penalty_i - penalty_j;
                         best_runway_i = runway_i;
                         best_runway_j = runway_j;
@@ -203,7 +203,7 @@ bool ASP::best_improvement_inter_swap(Solution &solution) {
     }
 
     // Apply the best swap found
-    if (delta > 0) {
+    if (delta >= 0 && best_runway_i != best_runway_j) {
         solution.runways[best_runway_i].sequence[best_flight_i].get().position = best_flight_j;
         solution.runways[best_runway_i].sequence[best_flight_i].get().runway = best_runway_j;
 
@@ -399,7 +399,7 @@ bool ASP::best_improvement_inter_move(Solution &solution) {
                     }
 
                     if (penalty_i + penalty_j < original_penalty_i + original_penalty_j &&
-                        original_penalty_i + original_penalty_j - (penalty_i + penalty_j) > delta) {
+                        original_penalty_i + original_penalty_j - (penalty_i + penalty_j) >= delta) {
                         delta = original_penalty_i + original_penalty_j - penalty_i - penalty_j;
                         best_runway_i = runway_i;
                         best_runway_j = runway_j;
@@ -412,7 +412,7 @@ bool ASP::best_improvement_inter_move(Solution &solution) {
     }
 
     // Apply the best move found
-    if (delta > 0) {
+    if (delta >= 0 && best_runway_i != best_runway_j) {
         solution.runways[best_runway_i].sequence[best_flight_i].get().position = best_flight_j;
         solution.runways[best_runway_i].sequence[best_flight_i].get().runway = best_runway_j;
         solution.runways[best_runway_i].prefix_penalty.pop_back();
@@ -617,7 +617,7 @@ bool ASP::best_improvement_intra_move(Solution &solution) {
 
                 const int delta = static_cast<int>(new_penalty) - static_cast<int>(original_penalty);
 
-                if (delta < best_delta) {
+                if (delta <= best_delta) {
                     best_delta = delta;
                     best_flight_i = flight_i;
                     best_flight_j = flight_j;
@@ -733,7 +733,7 @@ bool ASP::best_improvement_intra_move(Solution &solution) {
 
                 const int delta = static_cast<int>(new_penalty) - static_cast<int>(original_penalty);
 
-                if (delta < best_delta) {
+                if (delta <= best_delta) {
                     best_delta = delta;
                     best_flight_i = flight_i;
                     best_flight_j = flight_j;
@@ -742,7 +742,7 @@ bool ASP::best_improvement_intra_move(Solution &solution) {
             }
         }
     }
-    if (best_delta < 0) {
+    if (best_delta <= 0 && best_flight_i != best_flight_j) {
         Runway &best_runway = solution.runways[best_runway_i];
 
         if (best_flight_i < best_flight_j) {
