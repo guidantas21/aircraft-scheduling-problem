@@ -37,7 +37,7 @@ Solution ASP::parallel_GILS_VND(const size_t max_iterations, const size_t max_il
 #pragma omp for nowait
         for (size_t iteration = 0; iteration < max_iterations; ++iteration) {
 
-            Solution solution = randomized_greedy(alpha, flights);
+            Solution solution = lowest_release_time_insertion(flights);
             Solution iteration_best = solution;
 
             size_t ils_iteration = 0;
@@ -71,7 +71,7 @@ Solution ASP::GILS_VND(const size_t max_iterations, const size_t max_ils_iterati
     best_found.objective = std::numeric_limits<uint32_t>::max();
 
     for (size_t iteration = 0; iteration < max_iterations; ++iteration) {
-        Solution solution = randomized_greedy(alpha, flights);
+        Solution solution = lowest_release_time_insertion(flights);
 
         Solution local_best = solution;
 
