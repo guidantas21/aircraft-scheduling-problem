@@ -287,9 +287,10 @@ bool ASP::best_improvement_inter_move(Solution &solution) {
     uint32_t prev_start_time_i = 0;
     uint32_t prev_start_time_j = 0;
 
-    for (size_t runway_i = 0; runway_i < m_instance.get_num_runways() - 1; ++runway_i) {
+    for (size_t runway_i = 0; runway_i < m_instance.get_num_runways(); ++runway_i) {
         if (solution.runways[runway_i].sequence.size() == 1) continue; // Prevents a runway to be empty
-        for (size_t runway_j = runway_i + 1; runway_j < m_instance.get_num_runways(); ++runway_j) {
+        for (size_t runway_j = 0; runway_j < m_instance.get_num_runways(); ++runway_j) {
+            if (runway_i == runway_j) continue;
 
             // Get all combinations (flight_i, flight_j)
             for (size_t flight_i = 0; flight_i < solution.runways[runway_i].sequence.size(); ++flight_i) {

@@ -28,9 +28,12 @@ int main(int argc, char *argv[]) {
 
     ASP asp(instance);
 
-    Solution s1 = asp.GILS_VND(1, 10, 0);
+    Solution s2 = asp.GILS_VND_2(100, 100, 0.05);
+    s2.print();
 
+    Solution s1 = asp.GILS_VND(1, 10, 0);
     s1.print();
+
 
     return 0;
 }

@@ -66,12 +66,39 @@ Solution ASP::parallel_GILS_VND(const size_t max_iterations, const size_t max_il
     return best_found;
 }
 
-Solution ASP::GILS_VND(const size_t max_iterations, const size_t max_ils_iterations, const float alpha) { // NOLINT
+Solution ASP::GILS_VND(const size_t max_iterations, const size_t max_ils_iterations, const double alpha) { // NOLINT
     Solution best_found;
     best_found.objective = std::numeric_limits<uint32_t>::max();
 
     for (size_t iteration = 0; iteration < max_iterations; ++iteration) {
         Solution solution = lowest_release_time_insertion(flights);
+
+        Solution local_best = solution;
+
+        size_t ils_iteration = 0;
+        while (ils_iteration <= max_ils_iterations) {
+            VND(solution);
+
+            if (solution.objective < local_best.objective) {
+                local_best = solution;
+                ils_iteration = 0;
+            }
+            ++ils_iteration;
+        }
+
+        if (local_best.objective < best_found.objective) {
+            best_found = local_best;
+        }
+    }
+    return best_found;
+}
+
+Solution ASP::GILS_VND_2(const size_t max_iterations, const size_t max_ils_iterations, const double alpha) { // NOLINT
+    Solution best_found;
+    best_found.objective = std::numeric_limits<uint32_t>::max();
+
+    for (size_t iteration = 0; iteration < max_iterations; ++iteration) {
+        Solution solution = randomized_greedy(alpha, flights);
 
         Solution local_best = solution;
 
