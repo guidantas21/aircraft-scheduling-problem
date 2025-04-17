@@ -20,7 +20,7 @@ public:
     
     // Constructive heuristics
 
-    Solution randomized_greedy(float alpha, std::vector<Flight> &flights);
+    Solution randomized_greedy(double alpha, std::vector<Flight> &flights);
     Solution lowest_release_time_insertion(std::vector<Flight> &flights);
 
     // Local search procedures
@@ -39,7 +39,8 @@ public:
 
     Solution GRASP_VND(size_t max_iterations);                                                 // NOLINT
     Solution parallel_GILS_VND(size_t max_iterations, size_t max_ils_iterations, float alpha); // NOLINT
-    Solution GILS_VND(size_t max_iterations, size_t max_ils_iterations, float alpha);          // NOLINT
+    Solution GILS_VND(size_t max_iterations, size_t max_ils_iterations, double alpha);          // NOLINT
+    Solution GILS_VND_2(size_t max_iterations, size_t max_ils_iterations, double alpha);
 
     ASP(Instance &instance);
 };
