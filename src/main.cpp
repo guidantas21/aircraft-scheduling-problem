@@ -9,6 +9,8 @@
 #include "solution.hpp"
 
 int main(int argc, char *argv[]) {
+    srand(time(NULL));
+
     argparse::ArgumentParser program("ASP");
 
     program.add_argument("instance").help("Path to the input file").required();
