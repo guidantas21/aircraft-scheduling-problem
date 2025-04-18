@@ -22,6 +22,7 @@ public:
 
     Solution randomized_greedy(double alpha, std::vector<Flight> &flights);
     Solution lowest_release_time_insertion(std::vector<Flight> &flights);
+    Solution rand_lowest_release_time_insertion(std::vector<Flight> &flights);
 
     // Local search procedures
 
