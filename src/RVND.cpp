@@ -29,7 +29,7 @@ void ASP::RVND(Solution &solution) { // NOLINT
         }
         if (improved) {
             neighborhoods = {Neighborhood::IntraSwap, Neighborhood::InterSwap, Neighborhood::IntraMove,
-                             Neighborhood::InterMove};
+                             Neighborhood::InterMove, Neighborhood::WorstFlight};
 
         } else {
             neighborhoods.erase(neighborhoods.begin() + static_cast<long>(current_neighborhood));

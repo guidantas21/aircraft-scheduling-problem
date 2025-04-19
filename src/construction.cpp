@@ -113,7 +113,7 @@ Solution ASP::lowest_release_time_insertion(std::vector<Flight> &flights) {
 
     // Ordering of the candidate list by release time
     std::sort(candidate_list.begin(), candidate_list.end(), [](const auto flight_a, const auto flight_b) {
-        return flight_a.get().get_release_time() > flight_b.get().get_release_time();
+        return flight_a.get().get_release_time() + flight_a.get().get_runway_occupancy_time() > flight_b.get().get_release_time() + flight_b.get().get_runway_occupancy_time();
     });
 
     // Put the "runway.size()"'s lowests release time flights
@@ -191,19 +191,19 @@ size_t choose_runway(std::vector<size_t> start_time) {
     std::vector<float> values;
     float soma = 0;
 
-    std::cout << "\nIniciando escolha:\n";
+    // std::cout << "\nIniciando escolha:\n";
 
     // inverte os valores
     for (size_t i = 0; i < start_time.size(); i++) {
         values.push_back((float)1 / start_time[i]);
         soma += values[i];
-        std::cout << "Start time: " << start_time[i] << std::endl;
+        // std::cout << "Start time: " << start_time[i] << std::endl;
     }
 
     // calcula as probabilidades
     for (size_t i = 0; i < values.size(); i++) {
         values[i] = floor((values[i] / soma) * 100);
-        std::cout << "Probabilidade: " << values[i] << std::endl;
+        // std::cout << "Probabilidade: " << values[i] << std::endl;
     }
 
     // calcula os intervalos
@@ -211,7 +211,7 @@ size_t choose_runway(std::vector<size_t> start_time) {
     for (size_t i = 0; i < values.size(); i++) {
         values[i] = soma + values[i];
         soma = values[i];
-        std::cout << "Intervalo: " << values[i] << std::endl;
+        // std::cout << "Intervalo: " << values[i] << std::endl;
     }
 
     // escolho um numero
@@ -219,7 +219,7 @@ size_t choose_runway(std::vector<size_t> start_time) {
 
     for (size_t i = 0; i < values.size(); i++) {
         if (numero <= values[i]) {
-            std::cout << "Choosed: " << i << std::endl;
+            // std::cout << "Choosed: " << i << std::endl;
             return i;
         }
     }
