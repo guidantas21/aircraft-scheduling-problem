@@ -212,18 +212,8 @@ bool ASP::best_improvement_free_space(Solution &solution) {
         solution.runways[best_runway_j].prefix_penalty.push_back(0);
 
         // Add to best_runway_j
-        if (best_flight_j == solution.runways[best_runway_j].sequence.size()) {
-            solution.runways[best_runway_j].sequence.push_back(solution.runways[best_runway_i].sequence[best_flight_i]);
-        } else {
-            solution.runways[best_runway_j].sequence.push_back(m_dummy_flight);
-
-            for (size_t k = solution.runways[best_runway_j].sequence.size() - 1; k > best_flight_j; k--) {
-                solution.runways[best_runway_j].sequence[k] = solution.runways[best_runway_j].sequence[k - 1];
-                solution.runways[best_runway_j].sequence[k].get().position = k;
-            }
-
-            solution.runways[best_runway_j].sequence[best_flight_j] = solution.runways[best_runway_i].sequence[best_flight_i];
-        }
+        solution.runways[best_runway_j].sequence.push_back(solution.runways[best_runway_i].sequence[best_flight_i]);
+        
 
         // Remove from best_runway_i
         for (size_t k = best_flight_i; k + 1 < solution.runways[best_runway_i].sequence.size(); k++) {
@@ -233,13 +223,6 @@ bool ASP::best_improvement_free_space(Solution &solution) {
         solution.runways[best_runway_i].sequence.pop_back();
         
         // Update prefix best_runway_i
-        if (best_flight_i == 0) {
-            Flight &current_flight = solution.runways[best_runway_i].sequence[0].get();
-            current_flight.start_time = current_flight.get_release_time();
-            solution.runways[best_runway_i].prefix_penalty[1] = 0;
-            best_flight_i++;
-        }
-
         for (size_t i = best_flight_i; i < solution.runways[best_runway_i].sequence.size(); i++) {
             Flight &current_flight = solution.runways[best_runway_i].sequence[i].get();
             Flight &prev_flight = solution.runways[best_runway_i].sequence[i - 1].get();
@@ -255,13 +238,6 @@ bool ASP::best_improvement_free_space(Solution &solution) {
         }
 
         // Update prefix best_runway_j
-        if (best_flight_j == 0) {
-            Flight &current_flight = solution.runways[best_runway_j].sequence[0].get();
-            current_flight.start_time = current_flight.get_release_time();
-            solution.runways[best_runway_j].prefix_penalty[1] = 0;
-            best_flight_j++;
-        }
-
         for (size_t j = best_flight_j; j < solution.runways[best_runway_j].sequence.size(); j++) {
             Flight &current_flight = solution.runways[best_runway_j].sequence[j].get();
             Flight &prev_flight = solution.runways[best_runway_j].sequence[j - 1].get();
