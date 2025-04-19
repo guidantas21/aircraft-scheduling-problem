@@ -17,7 +17,7 @@ private:
     Flight m_dummy_flight;
 
 public:
-    enum class Neighborhood : uint8_t { IntraSwap, InterSwap, IntraMove, InterMove };
+    enum class Neighborhood : uint8_t { IntraSwap, InterSwap, IntraMove, InterMove, WorstFlight };
     std::vector<Flight> flights;
 
     // Constructive heuristics
@@ -37,6 +37,7 @@ public:
     bool best_improvement_inter_swap(Solution &solution);
     bool best_improvement_intra_move(Solution &solution);
     bool best_improvement_inter_move(Solution &solution);
+    bool move_worst_flight(Solution &Solution);
 
     // Methaheuristics
 

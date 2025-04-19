@@ -103,7 +103,8 @@ Solution ASP::GILS_RVND(const size_t max_iterations, const size_t max_ils_iterat
     for (size_t iteration = 0; iteration < max_iterations; ++iteration) {
         std::cout << iteration << std::endl;
 
-        Solution solution = lowest_release_time_insertion(flights);
+        // Solution solution = lowest_release_time_insertion(flights);
+        Solution solution = rand_lowest_release_time_insertion(flights);
         
         Solution local_best = solution;
 
