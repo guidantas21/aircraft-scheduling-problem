@@ -17,6 +17,7 @@ private:
     Flight m_dummy_flight;
 
 public:
+    enum class Neighborhood : uint8_t { IntraSwap, InterSwap, IntraMove, InterMove };
     std::vector<Flight> flights;
 
     // Constructive heuristics
@@ -27,7 +28,8 @@ public:
 
     // Local search procedures
 
-    void VND(Solution &solution); // NOLINT
+    void VND(Solution &solution);  // NOLINT
+    void RVND(Solution &solution); // NOLINT
 
     // Neighborhoods
 
@@ -42,6 +44,7 @@ public:
     Solution parallel_GILS_VND(size_t max_iterations, size_t max_ils_iterations, float alpha); // NOLINT
     Solution GILS_VND(size_t max_iterations, size_t max_ils_iterations, double alpha);         // NOLINT
     Solution GILS_VND_2(size_t max_iterations, size_t max_ils_iterations, double alpha);       // NOLINT
+    Solution GILS_RVND(size_t max_iterations, size_t max_ils_iterations, double alpha);        // NOLINT
 
     // Perturbations
 

@@ -1,4 +1,5 @@
 #include <cassert>
+#include <cstddef>
 #include <cstdlib>
 #include <filesystem>
 #include <iostream>
@@ -10,13 +11,22 @@
 #include "solution.hpp"
 
 int main(int argc, char *argv[]) {
-    srand(time(NULL));
-
     argparse::ArgumentParser program("ASP");
 
     srand(time(nullptr));
 
     program.add_argument("instance").help("Path to the input file").required();
+    program.add_argument("--grasp")
+        .help("Number of GRASP iterations")
+        .default_value("1")   // or no default if you want it required
+        .scan<'i', size_t>(); // 'i' means integer
+
+    program.add_argument("--ils").help("Number of ILS iterations").default_value("10").scan<'i', size_t>();
+
+    program.add_argument("--alpha")
+        .help("Alpha value for GRASP (0.0 to 1.0)")
+        .default_value("0.01")
+        .scan<'g', double>(); // 'g' means double (float)
 
     try {
         program.parse_args(argc, argv);
@@ -27,13 +37,19 @@ int main(int argc, char *argv[]) {
 
     std::filesystem::path instance_file_path = program.get<std::string>("instance");
 
+    auto grasp_iterations = program.get<size_t>("--grasp");
+
+    auto ils_iterations = program.get<size_t>("--ils");
+
+    auto alpha = program.get<double>("--alpha");
+
     Instance instance(instance_file_path);
 
     /*instance.print();*/
 
     ASP asp(instance);
 
-    Solution s2 = asp.GILS_VND(1, 12, 0.50);
+    Solution s2 = asp.GILS_RVND(grasp_iterations, ils_iterations, alpha);
 
     s2.print_runway();
 

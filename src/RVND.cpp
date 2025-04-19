@@ -1,20 +1,15 @@
 #include "ASP.hpp"
 #include <cassert>
-#include <csignal>
-#include <cstddef>
-#include <cstdint>
-#include <iostream>
-#include <vector>
 
-void ASP::VND(Solution &solution) { // NOLINT
+void ASP::RVND(Solution &solution) { // NOLINT
     std::vector<Neighborhood> neighborhoods{Neighborhood::IntraSwap, Neighborhood::InterSwap, Neighborhood::IntraMove,
                                             Neighborhood::InterMove};
 
+    bool improved = false;
     size_t current_neighborhood = 0;
 
-    while (current_neighborhood < neighborhoods.size()) {
-        bool improved = false;
-
+    while (not neighborhoods.empty()) {
+        current_neighborhood = rand() % neighborhoods.size();
         switch (neighborhoods[current_neighborhood]) {
         case Neighborhood::IntraSwap:
             improved = best_improvement_intra_swap(solution);
@@ -30,9 +25,11 @@ void ASP::VND(Solution &solution) { // NOLINT
             break;
         }
         if (improved) {
-            current_neighborhood = 0;
+            neighborhoods = {Neighborhood::IntraSwap, Neighborhood::InterSwap, Neighborhood::IntraMove,
+                             Neighborhood::InterMove};
+
         } else {
-            ++current_neighborhood;
+            neighborhoods.erase(neighborhoods.begin() + static_cast<long>(current_neighborhood));
         }
     }
     assert(solution.test_feasibility(m_instance));
