@@ -6,14 +6,15 @@ Solving the Airport Scheduling Problem (ASP) with independent runways.
 
 - [x] Instance parser
 - [x] Feasibility check
-- [ ] Constructive procedure
-- [ ] Local search
+- [x] Constructive procedure
+- [x] Local search
+- [ ] Perturbation
 - [ ] Methaheuristic
 
 ## Methaheuristics
 
-- [ ] ILS (Iterated Local Search)
-- [ ] GRASP (Greedy Randomized Adaptative Search Procedure)
+- [x] GRASP (Greedy Randomized Adaptative Search Procedure)
+- [x] GILS (GRASP Iterated Local Search)
 
 ## Constructive procedure
 
@@ -22,29 +23,19 @@ Solving the Airport Scheduling Problem (ASP) with independent runways.
 
 ## Local search
 
-- [ ] VND (Variable Neighborhood Search) [MANDATORY]
+- [x] VND (Variable Neighborhood Search) [MANDATORY]
 - [ ] RVND (Randomized Variable Neighborhood Search)
 
 ### Neighborhood
 
-- [ ] INTRA-SWAP: swap two flights in the same runway
-- [ ] INTER-SWAP: swap two flights in different runways
-- [ ] INTER-REINSERTION: reinsert flight in a different runway
+- [x] INTRA-SWAP: swap two flights in the same runway
+- [x] INTER-SWAP: swap two flights in different runways
+- [x] INTRA-MOVE: move flight to different position in the same runway
+- [x] INTER-MOVE: move flight to a different runway
 
-## Feasible solution
+### Perturbation
 
-- All permutations of aircrafts in a runway are feasible, as long as each flight is unique;
-- Each flight must be assigned to one runway.
-
-## Aircraft sequencing
-
-- All permutations of flights in a runway are valid.
-- Given a permutation of flights in a runway:
-
-    - The delay of the first flight is always zero;
-    - Additional waiting time can cause problems;
-
-- When inserting a flight into a permutation, it cannot cause additional delays to the previous flights, so you don't need to iterate over them to update the objective;
+- [] RANDOM-INTER-SWAP: swap two random blocks of flights in different runways 
 
 ## Getting started
 

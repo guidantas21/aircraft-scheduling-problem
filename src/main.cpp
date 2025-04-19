@@ -1,4 +1,5 @@
 #include <cassert>
+#include <cstdlib>
 #include <filesystem>
 #include <iostream>
 
@@ -12,6 +13,8 @@ int main(int argc, char *argv[]) {
     srand(time(NULL));
 
     argparse::ArgumentParser program("ASP");
+
+    srand(time(nullptr));
 
     program.add_argument("instance").help("Path to the input file").required();
 
@@ -30,12 +33,14 @@ int main(int argc, char *argv[]) {
 
     ASP asp(instance);
 
-    Solution s2 = asp.GILS_VND_2(20, 30, 0.05);
-    s2.print();
+    Solution s2 = asp.GILS_VND(1, 12, 0.50);
+
+    s2.print_runway();
+
+    std::cout << "Objective: " << s2.objective << '\n';
 
     // Solution s1 = asp.GILS_VND(1, 50, 0);
     // s1.print();
-
 
     return 0;
 }

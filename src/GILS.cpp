@@ -8,14 +8,6 @@
 #include <omp.h>
 #include <sys/types.h>
 
-thread_local std::mt19937 ASP::m_generator = []() {
-    std::random_device rd;
-    std::seed_seq seed{rd(), rd(),
-                       static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count()),
-                       static_cast<unsigned int>(omp_get_thread_num())};
-    return std::mt19937(seed);
-}();
-
 Solution ASP::parallel_GILS_VND(const size_t max_iterations, const size_t max_ils_iterations, const float alpha) {
     Solution best_found;
     best_found.objective = std::numeric_limits<uint32_t>::max();
@@ -75,8 +67,19 @@ Solution ASP::GILS_VND(const size_t max_iterations, const size_t max_ils_iterati
 
         Solution local_best = solution;
 
-        size_t ils_iteration = 0;
+        VND(solution);
+
+        size_t ils_iteration = 1;
+
         while (ils_iteration <= max_ils_iterations) {
+            size_t max_pertubation_iters =
+                1 + static_cast<size_t>(std::ceil(alpha * static_cast<double>(m_instance.get_num_runways() / 2)));
+
+            for (size_t perturbation_iteration = 0; perturbation_iteration < max_pertubation_iters;
+                 ++perturbation_iteration) {
+
+                random_inter_block_swap(solution);
+            }
             VND(solution);
 
             if (solution.objective < local_best.objective) {

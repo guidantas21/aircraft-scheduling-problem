@@ -9,14 +9,12 @@
 #include <unordered_set>
 
 Solution::Solution(const Instance &instance) {
-    runways.resize(instance.get_num_runways());
-
     size_t average_flights_per_runway = std::ceil(instance.get_num_flights() / instance.get_num_runways());
 
-    for (Runway &runway : runways) {
-        runway.sequence.reserve(average_flights_per_runway);
-        runway.prefix_penalty.reserve(average_flights_per_runway + 1);
-        runway.prefix_penalty.resize(1);
+    runways.reserve(instance.get_num_runways());
+
+    for (size_t runway_id = 0; runway_id < instance.get_num_runways(); ++runway_id) {
+        runways.emplace_back(runway_id, average_flights_per_runway);
     }
 }
 
