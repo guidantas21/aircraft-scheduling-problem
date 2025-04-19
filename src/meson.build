@@ -10,6 +10,7 @@ sources = files(
   'VND.cpp',
   'GRASP.cpp',
   'GILS.cpp',
+  'perturbation.cpp'
 )
 
 incdir = include_directories('../include')

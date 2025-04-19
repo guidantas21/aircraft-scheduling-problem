@@ -31,11 +31,9 @@ int main(int argc, char *argv[]) {
 
     ASP asp(instance);
 
-    Solution s2 = asp.GILS_VND(1, 12, 0.50);
+    Solution s2 = asp.GILS_VND(1, 10, 0);
 
-    s2.print_runway();
-
-    std::cout << "Objective: " << s2.objective << '\n';
+    s2.print();
 
     // Solution s1 = asp.GILS_VND(1, 50, 0);
     // s1.print();

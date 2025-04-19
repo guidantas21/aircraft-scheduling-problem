@@ -7,6 +7,12 @@
 
 #include "flight.hpp"
 
+Runway::Runway(const size_t id, const size_t estimated_size) : m_id(id) {
+    sequence.reserve(estimated_size);
+    prefix_penalty.reserve(estimated_size + 1);
+    prefix_penalty.push_back(0);
+}
+
 uint32_t Runway::calculate_total_penalty(const Instance &instance) const {
     size_t real_penalty = 0;
     if (sequence.empty()) {
