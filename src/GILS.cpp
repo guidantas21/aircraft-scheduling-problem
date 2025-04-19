@@ -100,28 +100,38 @@ Solution ASP::GILS_RVND(const size_t max_iterations, const size_t max_ils_iterat
     Solution best_found;
     best_found.objective = std::numeric_limits<uint32_t>::max();
 
-    for (size_t iteration = 0; iteration < max_iterations; ++iteration) {
-        std::cout << iteration << std::endl;
+    std::cout << ">> GILS-RVND\n";
 
-        Solution solution = lowest_release_time_insertion(flights);
-        
+    for (size_t iteration = 1; iteration <= max_iterations; ++iteration) {
+
+        std::cout << "\n[" << iteration << "/" << max_iterations << "]" << '\t';
+
+        std::cout << "Best found: " << best_found.objective << '\n';
+
+        Solution solution = rand_lowest_release_time_insertion(flights);
+
         Solution local_best = solution;
+
+        std::cout << "\tInitial solution: " << solution.objective << '\n';
 
         RVND(solution);
 
         size_t ils_iteration = 1;
 
         while (ils_iteration <= max_ils_iterations) {
-            size_t max_pertubation_iters =
+            auto max_pertubation_iters =
                 1 + static_cast<size_t>(std::ceil(alpha * static_cast<double>(m_instance.get_num_runways() / 2)));
 
-            for (size_t perturbation_iteration = 0; perturbation_iteration < max_pertubation_iters;
+            for (size_t perturbation_iteration = 1; perturbation_iteration < max_pertubation_iters;
                  ++perturbation_iteration) {
 
                 // if (perturbation_iteration < max_pertubation_iters / 2 ) random_inter_block_swap(solution);
                 // else best_improvement_free_space(solution);
 
-                best_improvement_free_space(solution);
+                if (not best_improvement_free_space(solution)) {
+                    random_inter_block_swap(solution);
+                    break;
+                }
             }
             RVND(solution);
 
@@ -131,11 +141,14 @@ Solution ASP::GILS_RVND(const size_t max_iterations, const size_t max_ils_iterat
             }
             ++ils_iteration;
         }
-
+        std::cout << "\tLocal best solution: " << local_best.objective;
         if (local_best.objective < best_found.objective) {
             best_found = local_best;
+            std::cout << "\t(New best solution!)";
         }
+        std::cout << '\n';
     }
+    std::cout << "\nBest found: " << best_found.objective << '\n';
     return best_found;
 }
 
