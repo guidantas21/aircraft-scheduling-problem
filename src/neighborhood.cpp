@@ -14,17 +14,15 @@ bool ASP::best_improvement_intra_swap(Solution &solution) {
     size_t best_flight_j = 0;
     size_t best_runway_i = 0;
 
-    // If the penalty is zero or there are fewer than two flights, no swaps are needed
-    if (solution.objective == 0) {
-        return false;
-    }
-
     uint32_t penalty = 0;         // Penalty of the new sequence after a swap
     uint32_t prev_start_time = 0; // Tracks the current time during penalty calculation
 
     for (size_t runway_i = 0; runway_i < m_instance.get_num_runways(); ++runway_i) {
         uint32_t original_penalty =
             solution.runways[runway_i].penalty; // Original penalty of the runway's flight sequence
+
+        if (original_penalty == 0) continue;
+
         std::vector<std::reference_wrapper<Flight>> &sequence =
             solution.runways[runway_i].sequence; // Original sequence of flights on the runway
 
@@ -634,295 +632,307 @@ bool ASP::best_improvement_inter_move(Solution &solution) {
 }
 
 bool ASP::best_improvement_intra_move(Solution &solution) {
+    uint32_t delta = 0; // Delta := improvement in penalty (original penalty - new penalty)
     size_t best_flight_i = 0;
     size_t best_flight_j = 0;
     size_t best_runway_i = 0;
 
-    int best_delta = 0;
+    uint32_t penalty = 0;         // Penalty of the new sequence after a swap
+    uint32_t prev_start_time = 0; // Tracks the current time during penalty calculation
 
     for (size_t runway_i = 0; runway_i < m_instance.get_num_runways(); ++runway_i) {
-        const int sequence_size = static_cast<int>(solution.runways[runway_i].sequence.size());
-        const uint32_t original_penalty = static_cast<int>(solution.runways[runway_i].penalty);
+        uint32_t original_penalty =
+            solution.runways[runway_i].penalty; // Original penalty of the runway's flight sequence
 
-        for (int flight_i = 0; flight_i < sequence_size; ++flight_i) {
-            const Flight &current_flight_i = solution.runways[runway_i].sequence[flight_i].get();
+        if (original_penalty == 0) continue;
 
-            // Move to posisitions before the flight_i
-            for (int flight_j = flight_i - 1; flight_j >= 0; --flight_j) {
+        std::vector<std::reference_wrapper<Flight>> &sequence =
+            solution.runways[runway_i].sequence; // Original sequence of flights on the runway
 
-                /*
-                 * To calculate the penalty
-                 * From [(F_0, ..., F_{j-1}), (F_j), (F_{j+1}, ..., F_{i-1}), (F_i), (F_{i+1}, ..., F_{n-1})]
-                 * To   [(F_0, ..., F_{j-1}), (F_i), (F_j), (F_{j+1}, ..., F_{i-1}), (F_{i+1}, ..., F_{n-1})]
-                 */
+        for (size_t flight_i = 0; flight_i < sequence.size(); flight_i++) {
+            for (size_t flight_j = 0; flight_j < sequence.size(); flight_j++) {
+                if (flight_i < flight_j) {
+                    penalty = solution.runways[runway_i].prefix_penalty[flight_i];
 
-                // (F_0, ..., F_{j-1})
+                    if (flight_i == 0) {
+                        prev_start_time = sequence[1].get().get_release_time();
+                    } else {
+                        Flight &current_flight = sequence[flight_i + 1].get();
+                        Flight &prev_flight = sequence[flight_i - 1].get();
 
-                const Flight &current_flight_j = solution.runways[runway_i].sequence[flight_j].get();
+                        prev_start_time = prev_flight.start_time;
 
-                uint32_t new_penalty = solution.runways[runway_i].prefix_penalty[flight_j];
+                        // prev_start_time becomes current_start_time
+                        prev_start_time =
+                            std::max(current_flight.get_release_time(),
+                                    prev_start_time + prev_flight.get_runway_occupancy_time() +
+                                        m_instance.get_separation_time(prev_flight.get_id(), current_flight.get_id()));
 
-                // (F_0, ..., F_{j-1}) + (F_i)
+                        penalty +=
+                                (prev_start_time - current_flight.get_release_time()) * current_flight.get_delay_penalty();
+                    }
 
-                uint32_t new_start_time_flight_i = 0;
+                    // [Flight_i + 2, Flight_j]
+                    for (size_t k = flight_i + 2; k <= flight_j; k++) {
+                        Flight &current_flight = sequence[k].get();
+                        Flight &prev_flight = sequence[k - 1].get();
 
-                if (flight_j == 0) {
-                    new_start_time_flight_i = current_flight_i.get_release_time();
-                } else {
-                    const Flight &prev_flight_j = solution.runways[runway_i].sequence[flight_j - 1].get();
+                        // prev_start_time becomes current_start_time
+                        prev_start_time =
+                            std::max(current_flight.get_release_time(),
+                                    prev_start_time + prev_flight.get_runway_occupancy_time() +
+                                        m_instance.get_separation_time(prev_flight.get_id(), current_flight.get_id()));
+                        
+                        
+                        if (current_flight.start_time == prev_start_time) {
+                            // Nothing gonna change until fligth_j
+                            penalty += solution.runways[runway_i].prefix_penalty[flight_j + 1] - solution.runways[runway_i].prefix_penalty[k];
+                            prev_start_time = sequence[flight_j].get().start_time;
+                            break;
+                        } else {
+                            penalty +=
+                                (prev_start_time - current_flight.get_release_time()) * current_flight.get_delay_penalty();
+                        }
 
-                    const uint32_t earliest_flight_i =
-                        prev_flight_j.start_time + prev_flight_j.get_runway_occupancy_time() +
-                        m_instance.get_separation_time(prev_flight_j.get_id(), current_flight_i.get_id());
+                        if (penalty >= original_penalty) break;
+                    }
 
-                    new_start_time_flight_i = std::max(earliest_flight_i, current_flight_i.get_release_time());
+                    // Put fligth_i next to fligth_j
+                    if (penalty >= original_penalty) continue;
+                    else {
+                        Flight &current_flight = sequence[flight_i].get();
+                        Flight &prev_flight = sequence[flight_j].get();
 
-                    const uint32_t delay_flight_i = new_start_time_flight_i - current_flight_i.get_release_time();
+                        // prev_start_time becomes current_start_time
+                        prev_start_time =
+                            std::max(current_flight.get_release_time(),
+                                    prev_start_time + prev_flight.get_runway_occupancy_time() +
+                                        m_instance.get_separation_time(prev_flight.get_id(), current_flight.get_id()));
 
-                    new_penalty += current_flight_i.get_delay_penalty() * delay_flight_i;
-                }
+                        penalty +=
+                                (prev_start_time - current_flight.get_release_time()) * current_flight.get_delay_penalty();
 
-                // ((F_0, ..., F_{j-1}) + (F_i)) + (F_j)
+                        if (flight_j + 1 < sequence.size()) {
+                            Flight &current_flight = sequence[flight_j + 1].get();
+                            Flight &prev_flight = sequence[flight_i].get();
 
-                const uint32_t earliest_flight_j =
-                    new_start_time_flight_i + current_flight_i.get_runway_occupancy_time() +
-                    m_instance.get_separation_time(current_flight_i.get_id(), current_flight_j.get_id());
+                            // prev_start_time becomes current_start_time
+                            prev_start_time =
+                                std::max(current_flight.get_release_time(),
+                                        prev_start_time + prev_flight.get_runway_occupancy_time() +
+                                            m_instance.get_separation_time(prev_flight.get_id(), current_flight.get_id()));
 
-                const uint32_t new_start_time_flight_j =
-                    std::max(earliest_flight_j, current_flight_j.get_release_time());
+                            penalty +=
+                                    (prev_start_time - current_flight.get_release_time()) * current_flight.get_delay_penalty();
+                        }
+                    }
 
-                const uint32_t delay_flight_j = new_start_time_flight_j - current_flight_j.get_release_time();
+                    // [Flight_j + 2, Last]
+                    for (size_t k = flight_j + 2; k < sequence.size(); k++) {
+                        if (penalty >= original_penalty) break;
 
-                new_penalty += current_flight_j.get_delay_penalty() * delay_flight_j;
+                        Flight &current_flight = sequence[k].get();
+                        Flight &prev_flight = sequence[k - 1].get();
 
-                // ((F_0, ..., F_{j-1}) + (F_i) + (F_j)) + (F_{j+1}, ..., F_{i-1})
+                        // prev_start_time becomes current_start_time
+                        prev_start_time =
+                            std::max(current_flight.get_release_time(),
+                                    prev_start_time + prev_flight.get_runway_occupancy_time() +
+                                        m_instance.get_separation_time(prev_flight.get_id(), current_flight.get_id()));
+                        
+                        
+                        if (current_flight.start_time == prev_start_time) {
+                            // Nothing gonna change until end
+                            penalty += solution.runways[runway_i].prefix_penalty[sequence.size()] - solution.runways[runway_i].prefix_penalty[k];
+                            break;
+                        } else {
+                            penalty +=
+                                (prev_start_time - current_flight.get_release_time()) * current_flight.get_delay_penalty();
+                        }
+                    }
 
-                uint32_t start_time = new_start_time_flight_j;
+                    if (penalty < original_penalty && original_penalty - penalty > delta) {
+                        delta = original_penalty - penalty;
+                        best_flight_i = flight_i;
+                        best_flight_j = flight_j;
+                        best_runway_i = runway_i;
+                    }
+                } else if (flight_i > flight_j) {
+                    penalty = solution.runways[runway_i].prefix_penalty[flight_j];
 
-                for (int flight_k = flight_j + 1; flight_k < flight_i; ++flight_k) {
-                    const Flight &current_flight = solution.runways[runway_i].sequence[flight_k].get();
-                    const Flight &prev_flight = solution.runways[runway_i].sequence[flight_k - 1].get();
+                    if (flight_j == 0) {
+                        Flight &current_flight = sequence[0].get();
+                        Flight &prev_flight = sequence[flight_i].get();
 
-                    const uint32_t earliest =
-                        start_time + prev_flight.get_runway_occupancy_time() +
-                        m_instance.get_separation_time(prev_flight.get_id(), current_flight.get_id());
+                        prev_start_time = prev_flight.get_release_time();
+                        
+                        // prev_start_time becomes current_start_time
+                        prev_start_time =
+                            std::max(current_flight.get_release_time(),
+                                    prev_start_time + prev_flight.get_runway_occupancy_time() +
+                                        m_instance.get_separation_time(prev_flight.get_id(), current_flight.get_id()));
 
-                    start_time = std::max(earliest, current_flight.get_release_time());
+                        penalty +=
+                                (prev_start_time - current_flight.get_release_time()) * current_flight.get_delay_penalty();
+                    } else {
+                        Flight &current_flight = sequence[flight_i].get();
+                        Flight &prev_flight = sequence[flight_j - 1].get();
 
-                    const uint32_t delay = start_time - current_flight.get_release_time();
+                        prev_start_time = prev_flight.start_time;
 
-                    new_penalty += current_flight.get_delay_penalty() * delay;
-                }
+                        // prev_start_time becomes current_start_time
+                        prev_start_time =
+                            std::max(current_flight.get_release_time(),
+                                    prev_start_time + prev_flight.get_runway_occupancy_time() +
+                                        m_instance.get_separation_time(prev_flight.get_id(), current_flight.get_id()));
 
-                // ((F_0, ..., F_{j-1}) + (F_i) + (F_j) + (F_{j+1}, ..., F_{i-1})) + (F_{i+1}, ..., F_{n-1})
+                        penalty +=
+                                (prev_start_time - current_flight.get_release_time()) * current_flight.get_delay_penalty();
 
-                uint32_t new_start_time_prev_flight_i = start_time;
+                        if (true) {
+                            Flight &current_flight = sequence[flight_j].get();
+                            Flight &prev_flight = sequence[flight_i].get();
 
-                if (flight_i < sequence_size - 1) {
+                            // prev_start_time becomes current_start_time
+                            prev_start_time =
+                                std::max(current_flight.get_release_time(),
+                                        prev_start_time + prev_flight.get_runway_occupancy_time() +
+                                            m_instance.get_separation_time(prev_flight.get_id(), current_flight.get_id()));
 
-                    // F_{i-1} + F_{i+1}
-                    const Flight &prev_flight_i = solution.runways[runway_i].sequence[flight_i - 1].get();
-                    const Flight &next_flight_i = solution.runways[runway_i].sequence[flight_i + 1].get();
+                            penalty +=
+                                    (prev_start_time - current_flight.get_release_time()) * current_flight.get_delay_penalty();
+                        }
+                    }
 
-                    const uint32_t earliest_next_flight_i =
-                        new_start_time_prev_flight_i + prev_flight_i.get_runway_occupancy_time() +
-                        m_instance.get_separation_time(prev_flight_i.get_id(), next_flight_i.get_id());
+                    // [Flight_j + 1, Flight_i - 1]
+                    for (size_t k = flight_j + 1; k < flight_i; k++) {
+                        Flight &current_flight = sequence[k].get();
+                        Flight &prev_flight = sequence[k - 1].get();
 
-                    const uint32_t new_start_time_next_flight_i =
-                        std::max(earliest_next_flight_i, next_flight_i.get_release_time());
+                        // prev_start_time becomes current_start_time
+                        prev_start_time =
+                            std::max(current_flight.get_release_time(),
+                                    prev_start_time + prev_flight.get_runway_occupancy_time() +
+                                        m_instance.get_separation_time(prev_flight.get_id(), current_flight.get_id()));
+                        
+                        
+                        if (current_flight.start_time == prev_start_time) {
+                            // Nothing gonna change until fligth_i - 1
+                            penalty += solution.runways[runway_i].prefix_penalty[flight_i] - solution.runways[runway_i].prefix_penalty[k];
+                            prev_start_time = sequence[flight_i - 1].get().start_time;
+                            break;
+                        } else {
+                            penalty +=
+                                (prev_start_time - current_flight.get_release_time()) * current_flight.get_delay_penalty();
+                        }
 
-                    const uint32_t delay = new_start_time_next_flight_i - next_flight_i.get_release_time();
+                        if (penalty >= original_penalty) break;
+                    }
 
-                    new_penalty += next_flight_i.get_delay_penalty() * delay;
+                    // Connect fligth_i - 1 && fligth_i + 1 if possible
+                    if (penalty >= original_penalty) continue;
+                    else if (flight_i + 1 < sequence.size()){
+                        Flight &current_flight = sequence[flight_i + 1].get();
+                        Flight &prev_flight = sequence[flight_i - 1].get();
 
-                    start_time = new_start_time_next_flight_i;
+                        // prev_start_time becomes current_start_time
+                        prev_start_time =
+                            std::max(current_flight.get_release_time(),
+                                    prev_start_time + prev_flight.get_runway_occupancy_time() +
+                                        m_instance.get_separation_time(prev_flight.get_id(), current_flight.get_id()));
 
-                    // (F_{i+1}, ..., F_{n-1})
-                    for (int flight_k = flight_i + 2; flight_k < sequence_size; ++flight_k) {
-                        const Flight &current_flight = solution.runways[runway_i].sequence[flight_k].get();
-                        const Flight &prev_flight = solution.runways[runway_i].sequence[flight_k - 1].get();
+                        penalty +=
+                                (prev_start_time - current_flight.get_release_time()) * current_flight.get_delay_penalty();
+                    }
 
-                        const uint32_t earliest =
-                            start_time + prev_flight.get_runway_occupancy_time() +
-                            m_instance.get_separation_time(prev_flight.get_id(), current_flight.get_id());
+                    // [Flight_i + 2, Last]
+                    for (size_t k = flight_i + 2; k < sequence.size(); k++) {
+                        if (penalty >= original_penalty) break;
 
-                        start_time = std::max(earliest, current_flight.get_release_time());
+                        Flight &current_flight = sequence[k].get();
+                        Flight &prev_flight = sequence[k - 1].get();
 
-                        const uint32_t delay = start_time - current_flight.get_release_time();
+                        // prev_start_time becomes current_start_time
+                        prev_start_time =
+                            std::max(current_flight.get_release_time(),
+                                    prev_start_time + prev_flight.get_runway_occupancy_time() +
+                                        m_instance.get_separation_time(prev_flight.get_id(), current_flight.get_id()));
+                        
+                        
+                        if (current_flight.start_time == prev_start_time) {
+                            // Nothing gonna change until last
+                            penalty += solution.runways[runway_i].prefix_penalty[sequence.size()] - solution.runways[runway_i].prefix_penalty[k];
+                            break;
+                        } else {
+                            penalty +=
+                                (prev_start_time - current_flight.get_release_time()) * current_flight.get_delay_penalty();
+                        }
 
-                        new_penalty += current_flight.get_delay_penalty() * delay;
+                    }
+
+                    if (penalty < original_penalty && original_penalty - penalty > delta) {
+                        delta = original_penalty - penalty;
+                        best_flight_i = flight_i;
+                        best_flight_j = flight_j;
+                        best_runway_i = runway_i;
                     }
                 }
 
-                const int delta = static_cast<int>(new_penalty) - static_cast<int>(original_penalty);
-
-                if (delta < best_delta) {
-                    best_delta = delta;
-                    best_flight_i = flight_i;
-                    best_flight_j = flight_j;
-                    best_runway_i = runway_i;
-                }
-            }
-
-            // Move to positions after the after flight_i
-            const uint32_t penalty_before_flight_i = solution.runways[runway_i].prefix_penalty[flight_i];
-
-            for (int flight_j = flight_i + 1; flight_j < sequence_size; ++flight_j) {
-                /*
-                 * From [(F_0, ..., F_{i-1}), (F_i), (F_{i+1}, ..., F_{j-1}), (F_j), (F_{j+1}, ..., F_{n-1})]
-                 * To   [(F_0, ..., F_{i-1}), (F_{i+1}, ..., F_{j-1}), (F_j), (F_i), (F_{j+1}, ..., F_{n-1})]
-                 */
-
-                const Flight &current_flight_j = solution.runways[runway_i].sequence[flight_j].get();
-
-                // (F_0, ..., F_{i-1})
-                uint32_t new_penalty = penalty_before_flight_i;
-
-                // (F_0, ..., F_{i-1}) + (F_{i+1}, ..., F_{j-1}) + (F_j)
-
-                Flight &next_flight_i = solution.runways[runway_i].sequence[flight_i + 1].get();
-
-                uint32_t new_start_time_next_flight_i = 0;
-
-                // F_{i-1} + F_{i+1}
-                if (flight_i == 0) {
-                    new_start_time_next_flight_i = next_flight_i.get_release_time();
-                } else {
-                    const Flight &prev_flight_i = solution.runways[runway_i].sequence[flight_i - 1].get();
-
-                    const uint32_t earliest_next_flight_i =
-                        prev_flight_i.start_time + prev_flight_i.get_runway_occupancy_time() +
-                        m_instance.get_separation_time(prev_flight_i.get_id(), next_flight_i.get_id());
-
-                    new_start_time_next_flight_i = std::max(earliest_next_flight_i, next_flight_i.get_release_time());
-
-                    const uint32_t delay_next_flight_i =
-                        new_start_time_next_flight_i - next_flight_i.get_release_time();
-
-                    new_penalty += next_flight_i.get_delay_penalty() * delay_next_flight_i;
-                }
-
-                // (F_{i+1}, ..., F_{j-1}) + (F_j)
-                uint32_t start_time = new_start_time_next_flight_i;
-
-                for (int flight_k = flight_i + 2; flight_k < flight_j + 1; ++flight_k) {
-                    const Flight &current_flight = solution.runways[runway_i].sequence[flight_k].get();
-                    const Flight &prev_flight = solution.runways[runway_i].sequence[flight_k - 1].get();
-
-                    const uint32_t earliest =
-                        start_time + prev_flight.get_runway_occupancy_time() +
-                        m_instance.get_separation_time(prev_flight.get_id(), current_flight.get_id());
-
-                    start_time = std::max(earliest, current_flight.get_release_time());
-
-                    const uint32_t delay = start_time - current_flight.get_release_time();
-
-                    new_penalty += current_flight.get_delay_penalty() * delay;
-                }
-
-                // (F_0, ..., F_{i-1}) + (F_{i+1}, ..., F_{j-1}) + (F_j) + (F_i)
-
-                uint32_t new_start_time_flight_j = start_time;
-
-                const uint32_t earliest_flight_i =
-                    new_start_time_flight_j + current_flight_j.get_runway_occupancy_time() +
-                    m_instance.get_separation_time(current_flight_j.get_id(), current_flight_i.get_id());
-
-                const uint32_t new_start_time_flight_i =
-                    std::max(earliest_flight_i, current_flight_i.get_release_time());
-
-                const uint32_t delay_flight_i = new_start_time_flight_i - current_flight_i.get_release_time();
-
-                new_penalty += current_flight_i.get_delay_penalty() * delay_flight_i;
-
-                // (F_0, ..., F_{i-1}) + (F_{i+1}, ..., F_{j-1}) + (F_j) + (F_i) + (F_{j+1}, ..., F_{n-1})
-
-                if (flight_j < sequence_size - 1) {
-                    Flight &next_flight_j = solution.runways[runway_i].sequence[flight_j + 1].get();
-
-                    const uint32_t earliest_next_flight_j =
-                        new_start_time_flight_i + current_flight_i.get_runway_occupancy_time() +
-                        m_instance.get_separation_time(current_flight_i.get_id(), next_flight_j.get_id());
-
-                    const uint32_t new_start_time_next_flight_j =
-                        std::max(earliest_next_flight_j, next_flight_j.get_release_time());
-
-                    const uint32_t delay_next_flight_j =
-                        new_start_time_next_flight_j - next_flight_j.get_release_time();
-
-                    new_penalty += next_flight_j.get_delay_penalty() * delay_next_flight_j;
-
-                    start_time = new_start_time_next_flight_j;
-
-                    for (int flight_k = flight_j + 2; flight_k < sequence_size; ++flight_k) {
-                        const Flight &current_flight = solution.runways[runway_i].sequence[flight_k].get();
-                        const Flight &prev_flight = solution.runways[runway_i].sequence[flight_k - 1].get();
-
-                        const uint32_t earliest =
-                            start_time + prev_flight.get_runway_occupancy_time() +
-                            m_instance.get_separation_time(prev_flight.get_id(), current_flight.get_id());
-
-                        start_time = std::max(earliest, current_flight.get_release_time());
-
-                        const uint32_t delay = start_time - current_flight.get_release_time();
-
-                        new_penalty += current_flight.get_delay_penalty() * delay;
-                    }
-                }
-
-                const int delta = static_cast<int>(new_penalty) - static_cast<int>(original_penalty);
-
-                if (delta < best_delta) {
-                    best_delta = delta;
-                    best_flight_i = flight_i;
-                    best_flight_j = flight_j;
-                    best_runway_i = runway_i;
-                }
             }
         }
     }
-    if (best_delta < 0) {
-        Runway &best_runway = solution.runways[best_runway_i];
+
+    // Apply the best move found
+    if (delta > 0) {
+        std::vector<std::reference_wrapper<Flight>> &sequence = solution.runways[best_runway_i].sequence;
 
         if (best_flight_i < best_flight_j) {
-            std::rotate(best_runway.sequence.begin() + static_cast<long>(best_flight_i),
-                        best_runway.sequence.begin() + static_cast<long>(best_flight_i) + 1,
-                        best_runway.sequence.begin() + static_cast<long>(best_flight_j) + 1);
+            Flight &tmp = sequence[best_flight_i].get();
+            
+            for (size_t k = best_flight_i; k < best_flight_j; k++) {
+                sequence[k] = sequence[k + 1];
+                sequence[k].get().position = k;
+            }
+
+            sequence[best_flight_j] = tmp;
+            sequence[best_flight_j].get().position = best_flight_j; 
+        } else if (best_flight_i > best_flight_j) {
+            Flight &tmp = sequence[best_flight_i].get();
+
+            for (size_t k = best_flight_i; k > best_flight_j; k--) {
+                sequence[k] = sequence[k - 1];
+                sequence[k].get().position = k;
+            }
+
+            sequence[best_flight_j] = tmp;
+            sequence[best_flight_j].get().position = best_flight_j; 
         }
-        if (best_flight_i > best_flight_j) {
-            std::rotate(best_runway.sequence.begin() + static_cast<long>(best_flight_j),
-                        best_runway.sequence.begin() + static_cast<long>(best_flight_i),
-                        best_runway.sequence.begin() + static_cast<long>(best_flight_i) + 1);
+
+        sequence[0].get().start_time = sequence[0].get().get_release_time();
+        prev_start_time = sequence[0].get().start_time;
+        penalty = 0;
+
+        for (size_t k = 1; k < sequence.size(); k++) {
+            Flight &current_flight = sequence[k].get();
+            Flight &prev_flight = sequence[k - 1].get();
+
+            // prev_start_time becomes current_start_time
+            prev_start_time =
+                std::max(current_flight.get_release_time(),
+                        prev_start_time + prev_flight.get_runway_occupancy_time() +
+                            m_instance.get_separation_time(prev_flight.get_id(), current_flight.get_id()));
+
+            penalty += (prev_start_time - current_flight.get_release_time()) * current_flight.get_delay_penalty();
+
+            current_flight.start_time = prev_start_time;
+            solution.runways[best_runway_i].prefix_penalty[k + 1] = penalty; 
         }
 
-        size_t update_initial_i = std::min(best_flight_i, best_flight_j);
-
-        if (update_initial_i == 0) {
-            best_runway.sequence.front().get().start_time = best_runway.sequence.front().get().get_release_time();
-            best_runway.prefix_penalty[1] = 0;
-            ++update_initial_i;
-        }
-
-        for (size_t flight_i = update_initial_i; flight_i < best_runway.sequence.size(); ++flight_i) {
-            Flight &current_flight = best_runway.sequence[flight_i].get();
-            Flight &prev_flight = best_runway.sequence[flight_i - 1].get();
-
-            uint32_t earliest = prev_flight.start_time + prev_flight.get_runway_occupancy_time() +
-                                m_instance.get_separation_time(prev_flight.get_id(), current_flight.get_id());
-
-            current_flight.start_time = std::max(current_flight.get_release_time(), earliest);
-
-            uint32_t delay = current_flight.start_time - current_flight.get_release_time();
-            uint32_t flight_penalty = current_flight.get_delay_penalty() * delay;
-
-            best_runway.prefix_penalty[flight_i + 1] = best_runway.prefix_penalty[flight_i] + flight_penalty;
-        }
-        best_runway.penalty += best_delta;
-        solution.objective += best_delta;
-
+        solution.runways[best_runway_i].penalty = penalty;
+        solution.objective -= delta;
         assert(solution.test_feasibility(m_instance));
-
         return true;
     }
+
     return false;
 }

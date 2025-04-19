@@ -101,8 +101,10 @@ Solution ASP::GILS_RVND(const size_t max_iterations, const size_t max_ils_iterat
     best_found.objective = std::numeric_limits<uint32_t>::max();
 
     for (size_t iteration = 0; iteration < max_iterations; ++iteration) {
-        Solution solution = lowest_release_time_insertion(flights);
+        std::cout << iteration << std::endl;
 
+        Solution solution = lowest_release_time_insertion(flights);
+        
         Solution local_best = solution;
 
         RVND(solution);
