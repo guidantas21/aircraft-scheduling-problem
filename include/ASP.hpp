@@ -49,6 +49,8 @@ public:
     // Perturbations
 
     void random_inter_block_swap(Solution &solution);
+    void best_improvement_free_space(Solution &solution);
+    
 
     ASP(Instance &instance);
 };
