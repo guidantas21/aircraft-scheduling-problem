@@ -116,8 +116,6 @@ Solution ASP::lowest_release_time_insertion(std::vector<Flight> &flights) {
         return flight_a.get().get_release_time() > flight_b.get().get_release_time();
     });
 
-    size_t qtd_runways = m_instance.get_num_runways();
-
     // Put the "runway.size()"'s lowests release time flights
     for (size_t runway_i = 0; runway_i < m_instance.get_num_runways(); ++runway_i) {
         solution.runways[runway_i].sequence.emplace_back(candidate_list.back()); // Coloca ele no final daquela pista
@@ -193,19 +191,19 @@ size_t choose_runway(std::vector<size_t> start_time) {
     std::vector<float> values;
     float soma = 0;
 
-    // std::cout << "\nIniciando escolha:\n";
+    std::cout << "\nIniciando escolha:\n";
 
     // inverte os valores
     for (size_t i = 0; i < start_time.size(); i++) {
         values.push_back((float)1 / start_time[i]);
         soma += values[i];
-        // std::cout << "Start time: " << start_time[i] << std::endl;
+        std::cout << "Start time: " << start_time[i] << std::endl;
     }
 
     // calcula as probabilidades
     for (size_t i = 0; i < values.size(); i++) {
         values[i] = floor((values[i] / soma) * 100);
-        // std::cout << "Probabilidade: " << values[i] << std::endl;
+        std::cout << "Probabilidade: " << values[i] << std::endl;
     }
 
     // calcula os intervalos
@@ -213,7 +211,7 @@ size_t choose_runway(std::vector<size_t> start_time) {
     for (size_t i = 0; i < values.size(); i++) {
         values[i] = soma + values[i];
         soma = values[i];
-        // std::cout << "Intervalo: " << values[i] << std::endl;
+        std::cout << "Intervalo: " << values[i] << std::endl;
     }
 
     // escolho um numero
@@ -221,7 +219,7 @@ size_t choose_runway(std::vector<size_t> start_time) {
 
     for (size_t i = 0; i < values.size(); i++) {
         if (numero <= values[i]) {
-            // std::cout << "Choosed: " << i << std::endl;
+            std::cout << "Choosed: " << i << std::endl;
             return i;
         }
     }
@@ -244,46 +242,30 @@ Solution ASP::rand_lowest_release_time_insertion(std::vector<Flight> &flights) {
         return flight_a.get().get_release_time() > flight_b.get().get_release_time();
     });
 
-    size_t qtd_runways = m_instance.get_num_runways();
-
-    // Os primeiros não importam em qual pista estarão
-    // Put the "runway.size()"'s lowests release time flights
-    for (size_t runway_i = 0; runway_i < m_instance.get_num_runways(); ++runway_i) {
-        solution.runways[runway_i].sequence.emplace_back(candidate_list.back()); // Coloca ele no final daquela pista
-        solution.runways[runway_i].prefix_penalty.push_back(0); // O penalty dele é zero pois é o primeiro
-
-        Flight &candidate = candidate_list.back().get(); // Facilitar a escrita
-
-        // Atualiza seus valores
-        candidate.position = 0;
-        candidate.runway = runway_i;
-        candidate.start_time = candidate.get_release_time();
-
-        // Apaga ele da lista de candidatos
-        candidate_list.pop_back();
-    }
-
     // Insert all the flights in the solution
     size_t choosed_runway;
-    size_t choosed_start_time;
     std::vector<size_t> start_time(m_instance.get_num_runways());
 
     while (!candidate_list.empty()) {
 
-        // Search the best runway which the start time be the lowest possible
-        // best_runway = 0;
-        // choosed_start_time = std::numeric_limits<size_t>::max();
-
         const Flight &current_flight = candidate_list.back().get(); // the flight who will be insert
 
         for (size_t runway_i = 0; runway_i < m_instance.get_num_runways(); ++runway_i) {
-            const Flight &prev_flight =
-                solution.runways[runway_i].sequence.back().get(); // the actual last flight in the runway
+            if(solution.runways[runway_i].sequence.size() == 0){ //if the runway is empty
+                start_time[runway_i] = current_flight.get_release_time();
+            }else{
+                const Flight &prev_flight =
+                    solution.runways[runway_i].sequence.back().get(); // the actual last flight in the runway
 
-            const uint32_t earliest = prev_flight.start_time + prev_flight.get_runway_occupancy_time() +
-                                      m_instance.get_separation_time(prev_flight.get_id(), current_flight.get_id());
+                const uint32_t earliest = prev_flight.start_time + prev_flight.get_runway_occupancy_time() +
+                    m_instance.get_separation_time(prev_flight.get_id(), current_flight.get_id());
 
-            start_time[runway_i] = std::max(earliest, current_flight.get_release_time());
+                start_time[runway_i] = std::max(earliest, current_flight.get_release_time());
+            }
+
+            if(start_time[runway_i] == 0){ //nem sei se realmente cairia nesse caso, mas vai que
+                start_time[runway_i]++; // can't be 0 because I will invert in the function choose_runway
+            }
         }
 
         choosed_runway = choose_runway(start_time);
