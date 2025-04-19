@@ -111,10 +111,23 @@ Solution ASP::lowest_release_time_insertion(std::vector<Flight> &flights) {
     }
     std::vector<size_t> candidates_position(m_instance.get_num_flights());
 
-    // Ordering of the candidate list by release time
-    std::sort(candidate_list.begin(), candidate_list.end(), [](const auto flight_a, const auto flight_b) {
-        return flight_a.get().get_release_time() + flight_a.get().get_runway_occupancy_time() > flight_b.get().get_release_time() + flight_b.get().get_runway_occupancy_time();
-    });
+    // Ordering 
+    int i = std::rand() % 10;
+
+    if (i < 6) {
+        std::sort(candidate_list.begin(), candidate_list.end(), [](const auto flight_a, const auto flight_b) {
+            return flight_a.get().get_release_time() + flight_a.get().get_runway_occupancy_time() > flight_b.get().get_release_time() + flight_b.get().get_runway_occupancy_time();
+        });
+    } else {
+        std::sort(candidate_list.begin(), candidate_list.end(), [](const auto flight_a, const auto flight_b) {
+            return flight_a.get().get_release_time() > flight_b.get().get_release_time();
+        });
+    }
+
+    for (size_t i = candidate_list.size() - 1; i >= candidate_list.size() - m_instance.get_num_runways(); i--) {
+        int prob_swap = std::rand() % 10;
+        if (prob_swap < 3) std::swap(candidate_list[i], candidate_list[i - m_instance.get_num_runways()]);
+    }
 
     // Put the "runway.size()"'s lowests release time flights
     for (size_t runway_i = 0; runway_i < m_instance.get_num_runways(); ++runway_i) {
