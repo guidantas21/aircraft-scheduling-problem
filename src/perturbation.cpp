@@ -116,7 +116,7 @@ void ASP::random_inter_block_swap(Solution &solution) {
     assert(solution.test_feasibility(m_instance));
 }
 
-void ASP::best_improvement_free_space(Solution &solution) {
+bool ASP::best_improvement_free_space(Solution &solution) {
     size_t best_flight_i = 0;
     size_t best_runway_i = 0;
     size_t best_runway_j = 0;
@@ -199,6 +199,8 @@ void ASP::best_improvement_free_space(Solution &solution) {
         if (penalty > original_penalty) solution.objective += penalty - original_penalty;
         else solution.objective -= original_penalty - penalty;
         assert(solution.test_feasibility(m_instance));
+
+        return true;
     } else if (best_free_space) {
         size_t best_flight_j = solution.runways[best_runway_j].sequence.size();
         uint32_t original_penalty_i = solution.runways[best_runway_i].penalty; 
@@ -282,6 +284,8 @@ void ASP::best_improvement_free_space(Solution &solution) {
         if (solution.runways[best_runway_j].penalty > original_penalty_j) solution.objective += solution.runways[best_runway_j].penalty - original_penalty_j;
         else solution.objective -= original_penalty_j - solution.runways[best_runway_j].penalty;
         assert(solution.test_feasibility(m_instance));
+
+        return true;
     }
-    
+    return false;
 }

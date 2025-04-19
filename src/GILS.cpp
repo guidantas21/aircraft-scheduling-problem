@@ -121,7 +121,7 @@ Solution ASP::GILS_RVND(const size_t max_iterations, const size_t max_ils_iterat
                 // if (perturbation_iteration < max_pertubation_iters / 2 ) random_inter_block_swap(solution);
                 // else best_improvement_free_space(solution);
 
-                best_improvement_free_space(solution);
+                if (false == best_improvement_free_space(solution)) break;
             }
             RVND(solution);
 
