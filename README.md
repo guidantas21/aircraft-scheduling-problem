@@ -1,32 +1,21 @@
-## Gupo
+## Team Members  
 
-- Gabriel Campelo Formiga
-- Gabriel Sherterton Araújo de Freitas
- -Guilherme Dantas Pinto
+- Gabriel Campelo Formiga  
+- Gabriel Sherterton Araújo de Freitas  
+- Guilherme Dantas Pinto  
 
-### Prerequisites
+## Project Build Instructions  
 
-- [Meson Build System](https://mesonbuild.com/)
-- C++ 17
+#### 1. Compilation  
+To compile the project, run:  
 
-### How to build the project
-
-1. Setup release and debug builds:
-
-```
-meson setup build --buildtype=release
+```bash
+make
 ```
 
-2. Compile build:
+#### 2. Execution
+After compilation, execute the program with:
 
-```
-meson compile -C <build>
-```
-
-3. Run:
-
-From the root directory:
-
-```
-./<build or build_debug>/src/asp
+```bash
+./bin/main
 ```

@@ -36,7 +36,9 @@ build/
 build_debug/
 build_release/
 build_sanitizers/
+bin/
 
 # Others
 .cache/
 .vscode/
+

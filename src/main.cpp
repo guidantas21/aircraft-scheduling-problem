@@ -151,7 +151,7 @@ int main() {
 
         for (size_t execution = 0; execution < NUM_EXECUTIONS; ++execution) {
 
-            fp_result << "\n----- Construction " << execution + 1 << ": \n";
+            fp_result << "\n----- Construction " << execution + 1 << "\n";
             std::cout << "\n(" << instance_data.instance_file << ") Construction " << execution + 1 << ": \n";
 
             start = std::chrono::high_resolution_clock::now();
@@ -164,7 +164,7 @@ int main() {
 
             construction[instance_id].count_execution(fp_result, solution, elapsed_time.count());
 
-            fp_result << "\n----- VND " << execution + 1 << ": \n";
+            fp_result << "\n----- VND " << execution + 1 << "\n";
 
             std::cout << "\n(" << instance_data.instance_file << ") VND " << execution + 1 << ": \n";
 
@@ -182,7 +182,7 @@ int main() {
         // GILS-RVND
 
         for (size_t execution = 0; execution < NUM_EXECUTIONS; ++execution) {
-            fp_result << "\n----- GILS-RVND " << execution + 1 << ":\n";
+            fp_result << "\n----- GILS-RVND " << execution + 1 << "\n";
 
             std::cout << "\n(" << instance_data.instance_file << ") GILS-RVND " << execution + 1 << ": \n";
 
