@@ -119,6 +119,8 @@ Solution ASP::GILS_RVND(const size_t max_iterations, const size_t max_ils_iterat
         size_t ils_iteration = 1;
 
         while (ils_iteration <= max_ils_iterations) {
+            if (ils_iteration % 5 == 0) std::cout << "ils = " << ils_iteration << '\n';
+
             auto max_pertubation_iters =
                 1 + static_cast<size_t>(std::ceil(alpha * static_cast<double>(m_instance.get_num_runways() / 2)));
 
