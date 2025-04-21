@@ -1,69 +1,17 @@
 #include "ASP.hpp"
-#include "flight.hpp"
 
 #include <cassert>
 #include <cstddef>
-#include <iostream>
 #include <limits>
 #include <omp.h>
 #include <sys/types.h>
-
-Solution ASP::parallel_GILS_VND(const size_t max_iterations, const size_t max_ils_iterations, const float alpha) {
-    Solution best_found;
-    best_found.objective = std::numeric_limits<uint32_t>::max();
-
-#pragma omp parallel
-    {
-        std::vector<Flight> flights;
-
-        flights.reserve(m_instance.get_num_flights());
-
-        for (size_t i = 0; i < m_instance.get_num_flights(); ++i) {
-            flights.emplace_back(i, m_instance.get_release_time(i), m_instance.get_runway_occupancy_time(i),
-                                 m_instance.get_delay_penalty(i));
-        }
-
-        Solution local_best;
-        local_best.objective = std::numeric_limits<uint32_t>::max();
-
-#pragma omp for nowait
-        for (size_t iteration = 0; iteration < max_iterations; ++iteration) {
-
-            Solution solution = lowest_release_time_insertion(flights);
-            Solution iteration_best = solution;
-
-            size_t ils_iteration = 0;
-            while (ils_iteration <= max_ils_iterations) {
-                VND(solution);
-
-                if (solution.objective < iteration_best.objective) {
-                    iteration_best = solution;
-                    ils_iteration = 0;
-                }
-                ++ils_iteration;
-            }
-
-            if (iteration_best.objective < local_best.objective) {
-                local_best = iteration_best;
-            }
-        }
-
-#pragma omp critical
-        {
-            if (local_best.objective < best_found.objective) {
-                best_found = local_best;
-            }
-        }
-    }
-    return best_found;
-}
 
 Solution ASP::GILS_VND(const size_t max_iterations, const size_t max_ils_iterations, const double alpha) { // NOLINT
     Solution best_found;
     best_found.objective = std::numeric_limits<uint32_t>::max();
 
     for (size_t iteration = 0; iteration < max_iterations; ++iteration) {
-        Solution solution = rand_lowest_release_time_insertion(flights);
+        Solution solution = lowest_release_time_insertion();
 
         Solution local_best = solution;
 
@@ -100,19 +48,10 @@ Solution ASP::GILS_RVND(const size_t max_iterations, const size_t max_ils_iterat
     Solution best_found;
     best_found.objective = std::numeric_limits<uint32_t>::max();
 
-    std::cout << ">> GILS-RVND\n";
-
     for (size_t iteration = 1; iteration <= max_iterations; ++iteration) {
-
-        std::cout << "\n[" << iteration << "/" << max_iterations << "]" << '\t';
-
-        std::cout << "Best found: " << best_found.objective << '\n';
-
-        Solution solution = lowest_release_time_insertion(flights);
+        Solution solution = lowest_release_time_insertion();
 
         Solution local_best = solution;
-
-        std::cout << "\tInitial solution: " << solution.objective << '\n';
 
         RVND(solution);
 
@@ -124,9 +63,6 @@ Solution ASP::GILS_RVND(const size_t max_iterations, const size_t max_ils_iterat
 
             for (size_t perturbation_iteration = 1; perturbation_iteration < max_pertubation_iters;
                  ++perturbation_iteration) {
-
-                // if (perturbation_iteration < max_pertubation_iters / 2 ) random_inter_block_swap(solution);
-                // else best_improvement_free_space(solution);
 
                 if (not best_improvement_free_space(solution)) {
                     random_inter_block_swap(solution);
@@ -141,37 +77,6 @@ Solution ASP::GILS_RVND(const size_t max_iterations, const size_t max_ils_iterat
             }
             ++ils_iteration;
         }
-        std::cout << "\tLocal best solution: " << local_best.objective;
-        if (local_best.objective < best_found.objective) {
-            best_found = local_best;
-            std::cout << "\t(New best solution!)";
-        }
-        std::cout << '\n';
-    }
-    std::cout << "\nBest found: " << best_found.objective << '\n';
-    return best_found;
-}
-
-Solution ASP::GILS_VND_2(const size_t max_iterations, const size_t max_ils_iterations, const double alpha) { // NOLINT
-    Solution best_found;
-    best_found.objective = std::numeric_limits<uint32_t>::max();
-
-    for (size_t iteration = 0; iteration < max_iterations; ++iteration) {
-        Solution solution = randomized_greedy(alpha, flights);
-
-        Solution local_best = solution;
-
-        size_t ils_iteration = 0;
-        while (ils_iteration <= max_ils_iterations) {
-            VND(solution);
-
-            if (solution.objective < local_best.objective) {
-                local_best = solution;
-                ils_iteration = 0;
-            }
-            ++ils_iteration;
-        }
-
         if (local_best.objective < best_found.objective) {
             best_found = local_best;
         }

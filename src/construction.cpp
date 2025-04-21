@@ -7,99 +7,9 @@
 #include <cstddef>
 #include <cstdint>
 #include <functional>
-#include <iostream>
+#include <random>
 
-struct Insertion {
-    size_t candidate_i;
-    uint32_t start_time;
-    uint32_t penalty;
-    uint32_t runway;
-
-    Insertion(size_t candidate_i, uint32_t start_time, uint32_t penalty, uint32_t runway)
-        : candidate_i(candidate_i), start_time(start_time), penalty(penalty), runway(runway) {}
-};
-
-Solution ASP::randomized_greedy(const double alpha, std::vector<Flight> &flights) {
-    Solution solution(m_instance);
-
-    std::vector<std::reference_wrapper<Flight>> candidate_list;
-    candidate_list.reserve(m_instance.get_num_flights());
-
-    for (size_t i = 0; i < m_instance.get_num_flights(); ++i) {
-        candidate_list.emplace_back(flights[i]);
-    }
-    std::vector<size_t> candidates_position(m_instance.get_num_flights());
-
-    std::sort(candidate_list.begin(), candidate_list.end(), [](const auto flight_a, const auto flight_b) {
-        return flight_a.get().get_release_time() > flight_b.get().get_release_time();
-    });
-
-    for (size_t runway_i = 0; runway_i < m_instance.get_num_runways(); ++runway_i) {
-        solution.runways[runway_i].sequence.emplace_back(candidate_list.back());
-        solution.runways[runway_i].prefix_penalty.push_back(0);
-
-        Flight &candidate = candidate_list.back().get();
-
-        candidate.position = 0;
-        candidate.runway = runway_i;
-        candidate.start_time = candidate.get_release_time();
-
-        candidate_list.pop_back();
-    }
-
-    while (not candidate_list.empty()) {
-        std::vector<Insertion> possible_insertions;
-
-        possible_insertions.reserve(m_instance.get_num_runways() * candidate_list.size());
-
-        for (int candidate_i = static_cast<int>(candidate_list.size()) - 1; candidate_i >= 0; --candidate_i) {
-            Flight &candidate = candidate_list[candidate_i];
-
-            candidates_position[candidate.get_id()] = candidate_i;
-
-            for (size_t runway_i = 0; runway_i < solution.runways.size(); ++runway_i) {
-                auto last_flight = solution.runways[runway_i].sequence.back();
-
-                uint32_t earliest = last_flight.get().start_time + last_flight.get().get_runway_occupancy_time() +
-                                    m_instance.get_separation_time(last_flight.get().get_id(), candidate.get_id());
-
-                uint32_t start_time = std::max(earliest, candidate.get_release_time());
-
-                uint32_t delay = start_time - candidate.get_release_time();
-
-                size_t insertion_penalty = candidate.get_delay_penalty() * delay;
-
-                possible_insertions.emplace_back(candidate_i, start_time, insertion_penalty, runway_i);
-            }
-        }
-        std::sort(possible_insertions.begin(), possible_insertions.end(),
-                  [](const Insertion &a, const Insertion &b) { return a.penalty < b.penalty; });
-
-        std::uniform_int_distribution<size_t> dist_selection(
-            0, std::ceil(alpha * static_cast<float>(possible_insertions.size())));
-
-        Insertion selected_insertion = possible_insertions[dist_selection(m_generator)];
-        Flight &selected_candidate = candidate_list[selected_insertion.candidate_i].get();
-
-        selected_candidate.start_time = selected_insertion.start_time;
-        selected_candidate.runway = selected_insertion.runway;
-        selected_candidate.position = solution.runways[selected_insertion.runway].sequence.size();
-
-        solution.runways[selected_insertion.runway].sequence.emplace_back(selected_candidate);
-        solution.runways[selected_insertion.runway].penalty += selected_insertion.penalty;
-        solution.runways[selected_insertion.runway].prefix_penalty.push_back(
-            solution.runways[selected_insertion.runway].penalty);
-        solution.objective += selected_insertion.penalty;
-
-        candidate_list.erase(candidate_list.begin() + static_cast<long>(selected_insertion.candidate_i));
-    }
-
-    assert(solution.test_feasibility(m_instance));
-
-    return solution;
-}
-
-Solution ASP::lowest_release_time_insertion(std::vector<Flight> &flights) {
+Solution ASP::lowest_release_time_insertion() {
     Solution solution(m_instance);
 
     // Initialization of the candidate list
@@ -111,12 +21,15 @@ Solution ASP::lowest_release_time_insertion(std::vector<Flight> &flights) {
     }
     std::vector<size_t> candidates_position(m_instance.get_num_flights());
 
-    // Ordering 
-    int i = std::rand() % 10;
+    // Ordering
+    std::uniform_int_distribution<int> dist(0, 10);
+
+    int i = dist(m_generator);
 
     if (i < 6) {
         std::sort(candidate_list.begin(), candidate_list.end(), [](const auto flight_a, const auto flight_b) {
-            return flight_a.get().get_release_time() + flight_a.get().get_runway_occupancy_time() > flight_b.get().get_release_time() + flight_b.get().get_runway_occupancy_time();
+            return flight_a.get().get_release_time() + flight_a.get().get_runway_occupancy_time() >
+                   flight_b.get().get_release_time() + flight_b.get().get_runway_occupancy_time();
         });
     } else {
         std::sort(candidate_list.begin(), candidate_list.end(), [](const auto flight_a, const auto flight_b) {
@@ -126,7 +39,9 @@ Solution ASP::lowest_release_time_insertion(std::vector<Flight> &flights) {
 
     for (size_t i = candidate_list.size() - 1; i >= candidate_list.size() - m_instance.get_num_runways(); i--) {
         int prob_swap = std::rand() % 10;
-        if (prob_swap < 3) std::swap(candidate_list[i], candidate_list[i - m_instance.get_num_runways()]);
+        if (prob_swap < 3) {
+            std::swap(candidate_list[i], candidate_list[i - m_instance.get_num_runways()]);
+        }
     }
 
     // Put the "runway.size()"'s lowests release time flights
@@ -136,19 +51,17 @@ Solution ASP::lowest_release_time_insertion(std::vector<Flight> &flights) {
 
         Flight &candidate = candidate_list.back().get(); // Facilitar a escrita
 
-        // Atualiza seus valores
         candidate.position = 0;
         candidate.runway = runway_i;
         candidate.start_time = candidate.get_release_time();
 
-        // Apaga ele da lista de candidatos
         candidate_list.pop_back();
     }
 
     // Insert all the flights in the solution
-    size_t best_runway;
-    size_t lowest_start_time;
-    size_t start_time;
+    size_t best_runway = 0;
+    size_t lowest_start_time = 0;
+    size_t start_time = 0;
     while (!candidate_list.empty()) {
 
         // Search the best runway which the start time be the lowest possible
@@ -177,13 +90,12 @@ Solution ASP::lowest_release_time_insertion(std::vector<Flight> &flights) {
         solution.runways[best_runway].prefix_penalty.push_back(
             solution.runways[best_runway]
                 .prefix_penalty[solution.runways[best_runway].sequence.size()] // the prefix of the last flight in the
-                                                                               // runwawy
-            + current_flight_penalty); // O prefix penalty dele é o prefix penalty do anterior mais o penalty dele
-        solution.runways[best_runway].sequence.emplace_back(candidate_list.back()); // Coloca ele no final daquela pista
+                                                                               // runway
+            + current_flight_penalty);
+        solution.runways[best_runway].sequence.emplace_back(candidate_list.back());
 
-        Flight &candidate = candidate_list.back().get(); // Facilitar a escrita
+        Flight &candidate = candidate_list.back().get();
 
-        // Atualiza seus valores
         candidate.position = solution.runways[best_runway].sequence.size() - 1;
         candidate.runway = best_runway;
         candidate.start_time = lowest_start_time;
@@ -191,119 +103,6 @@ Solution ASP::lowest_release_time_insertion(std::vector<Flight> &flights) {
         solution.runways[best_runway].penalty += current_flight_penalty;
         solution.objective += current_flight_penalty;
 
-        // Apaga ele da lista de candidatos
-        candidate_list.pop_back();
-    }
-
-    assert(solution.test_feasibility(m_instance));
-
-    return solution;
-}
-
-size_t choose_runway(std::vector<size_t> start_time) {
-    std::vector<float> values;
-    float soma = 0;
-
-    // std::cout << "\nIniciando escolha:\n";
-
-    // inverte os valores
-    for (size_t i = 0; i < start_time.size(); i++) {
-        values.push_back((float)1 / start_time[i]);
-        soma += values[i];
-        // std::cout << "Start time: " << start_time[i] << std::endl;
-    }
-
-    // calcula as probabilidades
-    for (size_t i = 0; i < values.size(); i++) {
-        values[i] = floor((values[i] / soma) * 100);
-        // std::cout << "Probabilidade: " << values[i] << std::endl;
-    }
-
-    // calcula os intervalos
-    soma = 0;
-    for (size_t i = 0; i < values.size(); i++) {
-        values[i] = soma + values[i];
-        soma = values[i];
-        // std::cout << "Intervalo: " << values[i] << std::endl;
-    }
-
-    // escolho um numero
-    size_t numero = rand() % (int)soma + 1;
-
-    for (size_t i = 0; i < values.size(); i++) {
-        if (numero <= values[i]) {
-            // std::cout << "Choosed: " << i << std::endl;
-            return i;
-        }
-    }
-}
-
-Solution ASP::rand_lowest_release_time_insertion(std::vector<Flight> &flights) {
-    Solution solution(m_instance);
-
-    // Initialization of the candidate list
-    std::vector<std::reference_wrapper<Flight>> candidate_list;
-    candidate_list.reserve(m_instance.get_num_flights());
-
-    for (size_t i = 0; i < m_instance.get_num_flights(); ++i) {
-        candidate_list.emplace_back(flights[i]);
-    }
-    std::vector<size_t> candidates_position(m_instance.get_num_flights());
-
-    // Ordering of the candidate list by release time
-    std::sort(candidate_list.begin(), candidate_list.end(), [](const auto flight_a, const auto flight_b) {
-        return flight_a.get().get_release_time() > flight_b.get().get_release_time();
-    });
-
-    // Insert all the flights in the solution
-    size_t choosed_runway;
-    std::vector<size_t> start_time(m_instance.get_num_runways());
-
-    while (!candidate_list.empty()) {
-
-        const Flight &current_flight = candidate_list.back().get(); // the flight who will be insert
-
-        for (size_t runway_i = 0; runway_i < m_instance.get_num_runways(); ++runway_i) {
-            if(solution.runways[runway_i].sequence.size() == 0){ //if the runway is empty
-                start_time[runway_i] = current_flight.get_release_time();
-            }else{
-                const Flight &prev_flight =
-                    solution.runways[runway_i].sequence.back().get(); // the actual last flight in the runway
-
-                const uint32_t earliest = prev_flight.start_time + prev_flight.get_runway_occupancy_time() +
-                    m_instance.get_separation_time(prev_flight.get_id(), current_flight.get_id());
-
-                start_time[runway_i] = std::max(earliest, current_flight.get_release_time());
-            }
-
-            if(start_time[runway_i] == 0){ //nem sei se realmente cairia nesse caso, mas vai que
-                start_time[runway_i]++; // can't be 0 because I will invert in the function choose_runway
-            }
-        }
-
-        choosed_runway = choose_runway(start_time);
-
-        uint32_t current_flight_penalty =
-            (start_time[choosed_runway] - current_flight.get_release_time()) * current_flight.get_delay_penalty();
-        solution.runways[choosed_runway].prefix_penalty.push_back(
-            solution.runways[choosed_runway]
-                .prefix_penalty[solution.runways[choosed_runway].sequence.size()] // the prefix of the last flight in
-                                                                                  // the runwawy
-            + current_flight_penalty); // O prefix penalty dele é o prefix penalty do anterior mais o penalty dele
-        solution.runways[choosed_runway].sequence.emplace_back(
-            candidate_list.back()); // Coloca ele no final daquela pista
-
-        Flight &candidate = candidate_list.back().get(); // Facilitar a escrita
-
-        // Atualiza seus valores
-        candidate.position = solution.runways[choosed_runway].sequence.size() - 1;
-        candidate.runway = choosed_runway;
-        candidate.start_time = start_time[choosed_runway];
-
-        solution.runways[choosed_runway].penalty += current_flight_penalty;
-        solution.objective += current_flight_penalty;
-
-        // Apaga ele da lista de candidatos
         candidate_list.pop_back();
     }
 

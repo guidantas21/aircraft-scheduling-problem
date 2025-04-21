@@ -2,6 +2,7 @@
 #define SOLUTION_HPP
 
 #include <cstdint>
+#include <fstream>
 #include <vector>
 
 #include "instance.hpp"
@@ -9,7 +10,7 @@
 
 struct Solution {
     std::vector<Runway> runways;
-    size_t objective = 0;
+    uint32_t objective = 0;
 
     Solution() = default;
 
@@ -22,6 +23,8 @@ struct Solution {
     bool test_feasibility(const Instance &instance) const;
 
     void print() const;
+
+    void print(std::ofstream &fp) const;
 
     void print_runway() const;
 };

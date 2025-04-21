@@ -5,6 +5,7 @@
 #include <cassert>
 #include <cmath>
 #include <cstddef>
+#include <fstream>
 #include <iostream>
 #include <unordered_set>
 
@@ -75,6 +76,19 @@ void Solution::print() const {
         ++i;
     }
     std::cout << "Objective: " << objective << '\n';
+}
+
+void Solution::print(std::ofstream &fp) const {
+    fp << "\nSolution\n\n";
+    size_t i = 1;
+    for (const Runway &runway : runways) {
+        fp << ">> Runway " << i << '\n';
+
+        runway.print(fp);
+        fp << '\n';
+        ++i;
+    }
+    fp << "Objective: " << objective << '\n';
 }
 
 void Solution::print_runway() const {

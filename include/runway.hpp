@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <fstream>
 #include <functional>
 #include <vector>
 
@@ -34,7 +35,11 @@ public:
 
     void print_runway() const;
 
+    void print_runway(std::ofstream &fp) const;
+
     void print() const;
+
+    void print(std::ofstream &fp) const;
 };
 
 #endif

@@ -1,6 +1,7 @@
 #include "runway.hpp"
 
 #include <algorithm>
+#include <fstream>
 #include <iostream>
 #include <unordered_set>
 #include <vector>
@@ -66,6 +67,13 @@ void Runway::print_runway() const {
     std::cout << '\n';
 }
 
+void Runway::print_runway(std::ofstream &fp) const {
+    for (const auto &flight : sequence) {
+        fp << flight.get().get_id() + 1 << ' ';
+    }
+    fp << '\n';
+}
+
 void Runway::print() const {
     std::cout << "Flights: ";
 
@@ -79,4 +87,19 @@ void Runway::print() const {
     std::cout << '\n';
     std::cout << "Number of flights: " << sequence.size() << '\n';
     std::cout << "Total penalty: " << penalty << '\n';
+}
+
+void Runway::print(std::ofstream &fp) const {
+    fp << "Flights: ";
+
+    print_runway(fp);
+
+    fp << "Prefix Penalty: ";
+    for (const auto &penalty : prefix_penalty) {
+        fp << penalty << ' ';
+    }
+
+    fp << '\n';
+    fp << "Number of flights: " << sequence.size() << '\n';
+    fp << "Total penalty: " << penalty << '\n';
 }

@@ -9,7 +9,6 @@ sources = files(
   'ASP.cpp',
   'VND.cpp',
   'RVND.cpp',
-  'GRASP.cpp',
   'GILS.cpp',
   'perturbation.cpp'
 )

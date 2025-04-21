@@ -1,0 +1,810 @@
+
+----- Construction 1: 
+
+Solution
+
+>> Runway 1
+Flights: 3 2 8 1 
+Prefix Penalty: 0 0 2196 2263 2431 
+Number of flights: 4
+Total penalty: 2431
+
+>> Runway 2
+Flights: 7 10 5 
+Prefix Penalty: 0 0 0 168 
+Number of flights: 3
+Total penalty: 168
+
+>> Runway 3
+Flights: 9 6 4 
+Prefix Penalty: 0 0 4104 4800 
+Number of flights: 3
+Total penalty: 4800
+
+Objective: 7399
+Optimal (or lower bound): 322
+Gap: 2197.83%
+Elapsed time: 7 microseconds
+
+----- VND 1: 
+
+Solution
+
+>> Runway 1
+Flights: 2 10 5 
+Prefix Penalty: 0 0 0 168 
+Number of flights: 3
+Total penalty: 168
+
+>> Runway 2
+Flights: 9 8 1 
+Prefix Penalty: 0 0 0 154 
+Number of flights: 3
+Total penalty: 154
+
+>> Runway 3
+Flights: 6 3 7 4 
+Prefix Penalty: 0 0 0 188 188 
+Number of flights: 4
+Total penalty: 188
+
+Objective: 510
+Optimal (or lower bound): 322
+Gap: 58.3851%
+Elapsed time: 32 microseconds
+
+----- Construction 2: 
+
+Solution
+
+>> Runway 1
+Flights: 6 3 8 
+Prefix Penalty: 0 0 0 0 
+Number of flights: 3
+Total penalty: 0
+
+>> Runway 2
+Flights: 2 7 10 1 
+Prefix Penalty: 0 0 0 0 84 
+Number of flights: 4
+Total penalty: 84
+
+>> Runway 3
+Flights: 9 5 4 
+Prefix Penalty: 0 0 0 3480 
+Number of flights: 3
+Total penalty: 3480
+
+Objective: 3564
+Optimal (or lower bound): 322
+Gap: 1006.83%
+Elapsed time: 3 microseconds
+
+----- VND 2: 
+
+Solution
+
+>> Runway 1
+Flights: 6 3 8 1 
+Prefix Penalty: 0 0 0 0 154 
+Number of flights: 4
+Total penalty: 154
+
+>> Runway 2
+Flights: 2 7 4 
+Prefix Penalty: 0 0 0 0 
+Number of flights: 3
+Total penalty: 0
+
+>> Runway 3
+Flights: 9 10 5 
+Prefix Penalty: 0 0 0 168 
+Number of flights: 3
+Total penalty: 168
+
+Objective: 322
+Optimal (or lower bound): 322
+Gap: 0%
+Elapsed time: 13 microseconds
+
+----- Construction 3: 
+
+Solution
+
+>> Runway 1
+Flights: 6 3 8 4 
+Prefix Penalty: 0 0 0 0 4350 
+Number of flights: 4
+Total penalty: 4350
+
+>> Runway 2
+Flights: 7 10 5 
+Prefix Penalty: 0 0 0 168 
+Number of flights: 3
+Total penalty: 168
+
+>> Runway 3
+Flights: 9 2 1 
+Prefix Penalty: 0 0 1224 1238 
+Number of flights: 3
+Total penalty: 1238
+
+Objective: 5756
+Optimal (or lower bound): 322
+Gap: 1687.58%
+Elapsed time: 2 microseconds
+
+----- VND 3: 
+
+Solution
+
+>> Runway 1
+Flights: 6 3 8 1 
+Prefix Penalty: 0 0 0 0 154 
+Number of flights: 4
+Total penalty: 154
+
+>> Runway 2
+Flights: 9 10 5 
+Prefix Penalty: 0 0 0 168 
+Number of flights: 3
+Total penalty: 168
+
+>> Runway 3
+Flights: 2 7 4 
+Prefix Penalty: 0 0 0 0 
+Number of flights: 3
+Total penalty: 0
+
+Objective: 322
+Optimal (or lower bound): 322
+Gap: 0%
+Elapsed time: 13 microseconds
+
+----- Construction 4: 
+
+Solution
+
+>> Runway 1
+Flights: 6 3 8 
+Prefix Penalty: 0 0 0 0 
+Number of flights: 3
+Total penalty: 0
+
+>> Runway 2
+Flights: 2 7 10 1 
+Prefix Penalty: 0 0 0 0 84 
+Number of flights: 4
+Total penalty: 84
+
+>> Runway 3
+Flights: 9 5 4 
+Prefix Penalty: 0 0 0 3480 
+Number of flights: 3
+Total penalty: 3480
+
+Objective: 3564
+Optimal (or lower bound): 322
+Gap: 1006.83%
+Elapsed time: 2 microseconds
+
+----- VND 4: 
+
+Solution
+
+>> Runway 1
+Flights: 6 3 8 1 
+Prefix Penalty: 0 0 0 0 154 
+Number of flights: 4
+Total penalty: 154
+
+>> Runway 2
+Flights: 2 7 4 
+Prefix Penalty: 0 0 0 0 
+Number of flights: 3
+Total penalty: 0
+
+>> Runway 3
+Flights: 9 10 5 
+Prefix Penalty: 0 0 0 168 
+Number of flights: 3
+Total penalty: 168
+
+Objective: 322
+Optimal (or lower bound): 322
+Gap: 0%
+Elapsed time: 14 microseconds
+
+----- Construction 5: 
+
+Solution
+
+>> Runway 1
+Flights: 6 3 8 
+Prefix Penalty: 0 0 0 0 
+Number of flights: 3
+Total penalty: 0
+
+>> Runway 2
+Flights: 2 7 10 1 
+Prefix Penalty: 0 0 0 0 84 
+Number of flights: 4
+Total penalty: 84
+
+>> Runway 3
+Flights: 9 5 4 
+Prefix Penalty: 0 0 0 3480 
+Number of flights: 3
+Total penalty: 3480
+
+Objective: 3564
+Optimal (or lower bound): 322
+Gap: 1006.83%
+Elapsed time: 3 microseconds
+
+----- VND 5: 
+
+Solution
+
+>> Runway 1
+Flights: 6 3 8 1 
+Prefix Penalty: 0 0 0 0 154 
+Number of flights: 4
+Total penalty: 154
+
+>> Runway 2
+Flights: 2 7 4 
+Prefix Penalty: 0 0 0 0 
+Number of flights: 3
+Total penalty: 0
+
+>> Runway 3
+Flights: 9 10 5 
+Prefix Penalty: 0 0 0 168 
+Number of flights: 3
+Total penalty: 168
+
+Objective: 322
+Optimal (or lower bound): 322
+Gap: 0%
+Elapsed time: 13 microseconds
+
+----- Construction 6: 
+
+Solution
+
+>> Runway 1
+Flights: 6 3 9 1 
+Prefix Penalty: 0 0 0 4692 4902 
+Number of flights: 4
+Total penalty: 4902
+
+>> Runway 2
+Flights: 2 7 10 8 
+Prefix Penalty: 0 0 0 0 1474 
+Number of flights: 4
+Total penalty: 1474
+
+>> Runway 3
+Flights: 5 4 
+Prefix Penalty: 0 0 3480 
+Number of flights: 2
+Total penalty: 3480
+
+Objective: 9856
+Optimal (or lower bound): 322
+Gap: 2960.87%
+Elapsed time: 2 microseconds
+
+----- VND 6: 
+
+Solution
+
+>> Runway 1
+Flights: 6 3 8 1 
+Prefix Penalty: 0 0 0 0 154 
+Number of flights: 4
+Total penalty: 154
+
+>> Runway 2
+Flights: 2 7 10 5 
+Prefix Penalty: 0 0 0 0 168 
+Number of flights: 4
+Total penalty: 168
+
+>> Runway 3
+Flights: 9 4 
+Prefix Penalty: 0 0 0 
+Number of flights: 2
+Total penalty: 0
+
+Objective: 322
+Optimal (or lower bound): 322
+Gap: 0%
+Elapsed time: 21 microseconds
+
+----- Construction 7: 
+
+Solution
+
+>> Runway 1
+Flights: 6 3 8 
+Prefix Penalty: 0 0 0 0 
+Number of flights: 3
+Total penalty: 0
+
+>> Runway 2
+Flights: 2 7 10 1 
+Prefix Penalty: 0 0 0 0 84 
+Number of flights: 4
+Total penalty: 84
+
+>> Runway 3
+Flights: 9 5 4 
+Prefix Penalty: 0 0 0 3480 
+Number of flights: 3
+Total penalty: 3480
+
+Objective: 3564
+Optimal (or lower bound): 322
+Gap: 1006.83%
+Elapsed time: 2 microseconds
+
+----- VND 7: 
+
+Solution
+
+>> Runway 1
+Flights: 6 3 8 1 
+Prefix Penalty: 0 0 0 0 154 
+Number of flights: 4
+Total penalty: 154
+
+>> Runway 2
+Flights: 2 7 4 
+Prefix Penalty: 0 0 0 0 
+Number of flights: 3
+Total penalty: 0
+
+>> Runway 3
+Flights: 9 10 5 
+Prefix Penalty: 0 0 0 168 
+Number of flights: 3
+Total penalty: 168
+
+Objective: 322
+Optimal (or lower bound): 322
+Gap: 0%
+Elapsed time: 13 microseconds
+
+----- Construction 8: 
+
+Solution
+
+>> Runway 1
+Flights: 6 3 8 
+Prefix Penalty: 0 0 0 0 
+Number of flights: 3
+Total penalty: 0
+
+>> Runway 2
+Flights: 2 7 10 1 
+Prefix Penalty: 0 0 0 0 84 
+Number of flights: 4
+Total penalty: 84
+
+>> Runway 3
+Flights: 9 5 4 
+Prefix Penalty: 0 0 0 3480 
+Number of flights: 3
+Total penalty: 3480
+
+Objective: 3564
+Optimal (or lower bound): 322
+Gap: 1006.83%
+Elapsed time: 2 microseconds
+
+----- VND 8: 
+
+Solution
+
+>> Runway 1
+Flights: 6 3 8 1 
+Prefix Penalty: 0 0 0 0 154 
+Number of flights: 4
+Total penalty: 154
+
+>> Runway 2
+Flights: 2 7 4 
+Prefix Penalty: 0 0 0 0 
+Number of flights: 3
+Total penalty: 0
+
+>> Runway 3
+Flights: 9 10 5 
+Prefix Penalty: 0 0 0 168 
+Number of flights: 3
+Total penalty: 168
+
+Objective: 322
+Optimal (or lower bound): 322
+Gap: 0%
+Elapsed time: 12 microseconds
+
+----- Construction 9: 
+
+Solution
+
+>> Runway 1
+Flights: 6 3 8 
+Prefix Penalty: 0 0 0 0 
+Number of flights: 3
+Total penalty: 0
+
+>> Runway 2
+Flights: 2 7 10 1 
+Prefix Penalty: 0 0 0 0 84 
+Number of flights: 4
+Total penalty: 84
+
+>> Runway 3
+Flights: 9 5 4 
+Prefix Penalty: 0 0 0 3480 
+Number of flights: 3
+Total penalty: 3480
+
+Objective: 3564
+Optimal (or lower bound): 322
+Gap: 1006.83%
+Elapsed time: 2 microseconds
+
+----- VND 9: 
+
+Solution
+
+>> Runway 1
+Flights: 6 3 8 1 
+Prefix Penalty: 0 0 0 0 154 
+Number of flights: 4
+Total penalty: 154
+
+>> Runway 2
+Flights: 2 7 4 
+Prefix Penalty: 0 0 0 0 
+Number of flights: 3
+Total penalty: 0
+
+>> Runway 3
+Flights: 9 10 5 
+Prefix Penalty: 0 0 0 168 
+Number of flights: 3
+Total penalty: 168
+
+Objective: 322
+Optimal (or lower bound): 322
+Gap: 0%
+Elapsed time: 12 microseconds
+
+----- Construction 10: 
+
+Solution
+
+>> Runway 1
+Flights: 3 5 4 
+Prefix Penalty: 0 0 350 6005 
+Number of flights: 3
+Total penalty: 6005
+
+>> Runway 2
+Flights: 2 7 10 8 
+Prefix Penalty: 0 0 0 0 1474 
+Number of flights: 4
+Total penalty: 1474
+
+>> Runway 3
+Flights: 9 6 1 
+Prefix Penalty: 0 0 4104 4468 
+Number of flights: 3
+Total penalty: 4468
+
+Objective: 11947
+Optimal (or lower bound): 322
+Gap: 3610.25%
+Elapsed time: 2 microseconds
+
+----- VND 10: 
+
+Solution
+
+>> Runway 1
+Flights: 9 10 5 
+Prefix Penalty: 0 0 0 168 
+Number of flights: 3
+Total penalty: 168
+
+>> Runway 2
+Flights: 2 7 4 
+Prefix Penalty: 0 0 0 0 
+Number of flights: 3
+Total penalty: 0
+
+>> Runway 3
+Flights: 6 3 8 1 
+Prefix Penalty: 0 0 0 0 154 
+Number of flights: 4
+Total penalty: 154
+
+Objective: 322
+Optimal (or lower bound): 322
+Gap: 0%
+Elapsed time: 23 microseconds
+
+----- GILS-RVND 1:
+
+Solution
+
+>> Runway 1
+Flights: 6 3 8 1 
+Prefix Penalty: 0 0 0 0 154 
+Number of flights: 4
+Total penalty: 154
+
+>> Runway 2
+Flights: 9 7 10 5 
+Prefix Penalty: 0 0 0 0 168 
+Number of flights: 4
+Total penalty: 168
+
+>> Runway 3
+Flights: 2 4 
+Prefix Penalty: 0 0 0 
+Number of flights: 2
+Total penalty: 0
+
+Objective: 322
+Optimal (or lower bound): 322
+Gap: 0%
+Elapsed time: 72 microseconds
+
+----- GILS-RVND 2:
+
+Solution
+
+>> Runway 1
+Flights: 6 3 8 1 
+Prefix Penalty: 0 0 0 0 154 
+Number of flights: 4
+Total penalty: 154
+
+>> Runway 2
+Flights: 2 4 
+Prefix Penalty: 0 0 0 
+Number of flights: 2
+Total penalty: 0
+
+>> Runway 3
+Flights: 9 7 10 5 
+Prefix Penalty: 0 0 0 0 168 
+Number of flights: 4
+Total penalty: 168
+
+Objective: 322
+Optimal (or lower bound): 322
+Gap: 0%
+Elapsed time: 59 microseconds
+
+----- GILS-RVND 3:
+
+Solution
+
+>> Runway 1
+Flights: 6 3 7 4 
+Prefix Penalty: 0 0 0 188 188 
+Number of flights: 4
+Total penalty: 188
+
+>> Runway 2
+Flights: 2 8 1 
+Prefix Penalty: 0 0 0 154 
+Number of flights: 3
+Total penalty: 154
+
+>> Runway 3
+Flights: 9 10 5 
+Prefix Penalty: 0 0 0 168 
+Number of flights: 3
+Total penalty: 168
+
+Objective: 510
+Optimal (or lower bound): 322
+Gap: 58.3851%
+Elapsed time: 56 microseconds
+
+----- GILS-RVND 4:
+
+Solution
+
+>> Runway 1
+Flights: 2 10 5 
+Prefix Penalty: 0 0 0 168 
+Number of flights: 3
+Total penalty: 168
+
+>> Runway 2
+Flights: 6 3 8 1 
+Prefix Penalty: 0 0 0 0 154 
+Number of flights: 4
+Total penalty: 154
+
+>> Runway 3
+Flights: 9 7 4 
+Prefix Penalty: 0 0 0 0 
+Number of flights: 3
+Total penalty: 0
+
+Objective: 322
+Optimal (or lower bound): 322
+Gap: 0%
+Elapsed time: 63 microseconds
+
+----- GILS-RVND 5:
+
+Solution
+
+>> Runway 1
+Flights: 9 8 1 
+Prefix Penalty: 0 0 0 154 
+Number of flights: 3
+Total penalty: 154
+
+>> Runway 2
+Flights: 6 3 7 4 
+Prefix Penalty: 0 0 0 188 188 
+Number of flights: 4
+Total penalty: 188
+
+>> Runway 3
+Flights: 2 10 5 
+Prefix Penalty: 0 0 0 168 
+Number of flights: 3
+Total penalty: 168
+
+Objective: 510
+Optimal (or lower bound): 322
+Gap: 58.3851%
+Elapsed time: 46 microseconds
+
+----- GILS-RVND 6:
+
+Solution
+
+>> Runway 1
+Flights: 6 3 7 4 
+Prefix Penalty: 0 0 0 188 188 
+Number of flights: 4
+Total penalty: 188
+
+>> Runway 2
+Flights: 2 8 1 
+Prefix Penalty: 0 0 0 154 
+Number of flights: 3
+Total penalty: 154
+
+>> Runway 3
+Flights: 9 10 5 
+Prefix Penalty: 0 0 0 168 
+Number of flights: 3
+Total penalty: 168
+
+Objective: 510
+Optimal (or lower bound): 322
+Gap: 58.3851%
+Elapsed time: 55 microseconds
+
+----- GILS-RVND 7:
+
+Solution
+
+>> Runway 1
+Flights: 9 8 1 
+Prefix Penalty: 0 0 0 154 
+Number of flights: 3
+Total penalty: 154
+
+>> Runway 2
+Flights: 2 4 
+Prefix Penalty: 0 0 0 
+Number of flights: 2
+Total penalty: 0
+
+>> Runway 3
+Flights: 6 3 7 10 5 
+Prefix Penalty: 0 0 0 188 188 356 
+Number of flights: 5
+Total penalty: 356
+
+Objective: 510
+Optimal (or lower bound): 322
+Gap: 58.3851%
+Elapsed time: 59 microseconds
+
+----- GILS-RVND 8:
+
+Solution
+
+>> Runway 1
+Flights: 9 7 4 
+Prefix Penalty: 0 0 0 0 
+Number of flights: 3
+Total penalty: 0
+
+>> Runway 2
+Flights: 2 10 5 
+Prefix Penalty: 0 0 0 168 
+Number of flights: 3
+Total penalty: 168
+
+>> Runway 3
+Flights: 6 3 8 1 
+Prefix Penalty: 0 0 0 0 154 
+Number of flights: 4
+Total penalty: 154
+
+Objective: 322
+Optimal (or lower bound): 322
+Gap: 0%
+Elapsed time: 69 microseconds
+
+----- GILS-RVND 9:
+
+Solution
+
+>> Runway 1
+Flights: 9 7 4 
+Prefix Penalty: 0 0 0 0 
+Number of flights: 3
+Total penalty: 0
+
+>> Runway 2
+Flights: 2 10 5 
+Prefix Penalty: 0 0 0 168 
+Number of flights: 3
+Total penalty: 168
+
+>> Runway 3
+Flights: 6 3 8 1 
+Prefix Penalty: 0 0 0 0 154 
+Number of flights: 4
+Total penalty: 154
+
+Objective: 322
+Optimal (or lower bound): 322
+Gap: 0%
+Elapsed time: 54 microseconds
+
+----- GILS-RVND 10:
+
+Solution
+
+>> Runway 1
+Flights: 6 3 7 4 
+Prefix Penalty: 0 0 0 188 188 
+Number of flights: 4
+Total penalty: 188
+
+>> Runway 2
+Flights: 2 10 5 
+Prefix Penalty: 0 0 0 168 
+Number of flights: 3
+Total penalty: 168
+
+>> Runway 3
+Flights: 9 8 1 
+Prefix Penalty: 0 0 0 154 
+Number of flights: 3
+Total penalty: 154
+
+Objective: 510
+Optimal (or lower bound): 322
+Gap: 58.3851%
+Elapsed time: 57 microseconds

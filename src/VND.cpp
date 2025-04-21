@@ -1,19 +1,18 @@
 #include "ASP.hpp"
+
 #include <cassert>
 #include <csignal>
 #include <cstddef>
-#include <cstdint>
-#include <iostream>
 #include <vector>
 
 void ASP::VND(Solution &solution) { // NOLINT
-    std::vector<Neighborhood> neighborhoods{Neighborhood::IntraSwap, Neighborhood::InterSwap, Neighborhood::IntraMove,
+    std::vector<Neighborhood> neighborhoods{Neighborhood::IntraSwap, Neighborhood::IntraMove, Neighborhood::InterSwap,
                                             Neighborhood::InterMove};
 
+    bool improved = false;
     size_t current_neighborhood = 0;
 
     while (current_neighborhood < neighborhoods.size()) {
-        bool improved = false;
 
         switch (neighborhoods[current_neighborhood]) {
         case Neighborhood::IntraSwap:

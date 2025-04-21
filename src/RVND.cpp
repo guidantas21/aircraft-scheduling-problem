@@ -1,15 +1,20 @@
 #include "ASP.hpp"
 #include <cassert>
+#include <cstddef>
+#include <random>
 
 void ASP::RVND(Solution &solution) { // NOLINT
-    std::vector<Neighborhood> neighborhoods{Neighborhood::IntraSwap, Neighborhood::InterSwap, Neighborhood::IntraMove,
-                                            Neighborhood::InterMove, Neighborhood::WorstFlight};
+    std::vector<Neighborhood> neighborhoods{Neighborhood::IntraSwap, Neighborhood::IntraMove, Neighborhood::InterSwap,
+                                            Neighborhood::InterMove};
 
     bool improved = false;
     size_t current_neighborhood = 0;
 
     while (not neighborhoods.empty()) {
-        current_neighborhood = rand() % neighborhoods.size();
+
+        std::uniform_int_distribution<size_t> dist_neighborhood(0, neighborhoods.size() - 1);
+        current_neighborhood = dist_neighborhood(m_generator);
+
         switch (neighborhoods[current_neighborhood]) {
         case Neighborhood::IntraSwap:
             improved = best_improvement_intra_swap(solution);
@@ -23,14 +28,10 @@ void ASP::RVND(Solution &solution) { // NOLINT
         case Neighborhood::InterMove:
             improved = best_improvement_inter_move(solution);
             break;
-        case Neighborhood::WorstFlight:
-            improved = move_worst_flight(solution);
-            break;
         }
         if (improved) {
-            neighborhoods = {Neighborhood::IntraSwap, Neighborhood::InterSwap, Neighborhood::IntraMove,
-                             Neighborhood::InterMove, Neighborhood::WorstFlight};
-
+            neighborhoods = {Neighborhood::IntraSwap, Neighborhood::IntraMove, Neighborhood::InterSwap,
+                             Neighborhood::InterMove};
         } else {
             neighborhoods.erase(neighborhoods.begin() + static_cast<long>(current_neighborhood));
         }
