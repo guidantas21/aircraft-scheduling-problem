@@ -108,18 +108,43 @@ Solution ASP::GILS_RVND(const size_t max_iterations, const size_t max_ils_iterat
 
         std::cout << "Best found: " << best_found.objective << '\n';
 
-        Solution solution = lowest_release_time_insertion(flights);
+        Solution local_best = rand_lowest_release_time_insertion(flights);
 
-        Solution local_best = solution;
+        std::cout << "\tInitial solution: " << local_best.objective << '\n';
 
-        std::cout << "\tInitial solution: " << solution.objective << '\n';
-
-        RVND(solution);
+        RVND(local_best);
 
         size_t ils_iteration = 1;
 
+        Solution solution = lowest_release_time_insertion(flights_perturbation); // USED AT PERTURBATION
+        
         while (ils_iteration <= max_ils_iterations) {
-            if (ils_iteration % 5 == 0) std::cout << "ils = " << ils_iteration << '\n';
+            // solution <= local_best ////////////////////////////////////////
+                solution.objective = local_best.objective;
+
+                // Runways
+                for (size_t i = 0; i < local_best.runways.size(); i++) {
+                    // solution.runways[i] <= local_best.runways[i];
+                    solution.runways[i].penalty = local_best.runways[i].penalty;
+                    solution.runways[i].prefix_penalty = local_best.runways[i].prefix_penalty;
+                    
+                    solution.runways[i].sequence.clear();
+
+                    for (size_t j = 0; j < local_best.runways[i].sequence.size(); j++) {
+                        // solution.runways[i].sequence[j] <= lcoal_best.runways[i].sequence[j]
+                        Flight &flight = local_best.runways[i].sequence[j].get();
+
+                        flights_perturbation[flight.get_id()].start_time = flight.start_time;
+                        flights_perturbation[flight.get_id()].runway = flight.runway;
+                        flights_perturbation[flight.get_id()].position = flight.position;
+                        
+                        solution.runways[i].sequence.emplace_back(flights_perturbation[flight.get_id()]);
+                    }
+                }
+            ////////////////////////////////////////////////////////////////////////////
+
+            
+            // if (ils_iteration % 5 == 0) std::cout << "ils = " << ils_iteration << '\n';
 
             auto max_pertubation_iters =
                 1 + static_cast<size_t>(std::ceil(alpha * static_cast<double>(m_instance.get_num_runways() / 2)));
@@ -127,18 +152,38 @@ Solution ASP::GILS_RVND(const size_t max_iterations, const size_t max_ils_iterat
             for (size_t perturbation_iteration = 1; perturbation_iteration < max_pertubation_iters;
                  ++perturbation_iteration) {
 
-                // if (perturbation_iteration < max_pertubation_iters / 2 ) random_inter_block_swap(solution);
-                // else best_improvement_free_space(solution);
-
-                if (not best_improvement_free_space(solution)) {
-                    random_inter_block_swap(solution);
-                    break;
-                }
+                random_inter_block_swap(solution);
             }
+
             RVND(solution);
 
             if (solution.objective < local_best.objective) {
-                local_best = solution;
+                // std::cout << "ils = " << ils_iteration << '\n';
+
+                // local_best <= solution ////////////////////////////////////////
+                    local_best.objective = solution.objective;
+
+                    // Runways
+                    for (size_t i = 0; i < solution.runways.size(); i++) {
+                        // local_best.runways[i] <= solution.runways[i];
+                        local_best.runways[i].penalty = solution.runways[i].penalty;
+                        local_best.runways[i].prefix_penalty = solution.runways[i].prefix_penalty;
+                        
+                        local_best.runways[i].sequence.clear();
+
+                        for (size_t j = 0; j < solution.runways[i].sequence.size(); j++) {
+                            // local_best.runways[i].sequence[j] <= solution.runways[i].sequence[j]
+                            Flight &flight = solution.runways[i].sequence[j].get();
+
+                            flights[flight.get_id()].start_time = flight.start_time;
+                            flights[flight.get_id()].runway = flight.runway;
+                            flights[flight.get_id()].position = flight.position;
+                            
+                            local_best.runways[i].sequence.emplace_back(flights[flight.get_id()]);
+                        }
+                    }
+                ////////////////////////////////////////////////////////////////////////////
+
                 ils_iteration = 0;
             }
             ++ils_iteration;
@@ -146,7 +191,10 @@ Solution ASP::GILS_RVND(const size_t max_iterations, const size_t max_ils_iterat
         std::cout << "\tLocal best solution: " << local_best.objective;
         if (local_best.objective < best_found.objective) {
             best_found = local_best;
-            std::cout << "\t(New best solution!)";
+            std::cout << "\t(New best solution!)\n\n";
+
+            best_found.print_runway();
+            std::cout << "Objective: " << best_found.objective << '\n';
         }
         std::cout << '\n';
     }

@@ -19,6 +19,7 @@ private:
 public:
     enum class Neighborhood : uint8_t { IntraSwap, InterSwap, IntraMove, InterMove, WorstFlight };
     std::vector<Flight> flights;
+    std::vector<Flight> flights_perturbation;
 
     // Constructive heuristics
 

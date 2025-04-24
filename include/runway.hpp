@@ -18,6 +18,8 @@ public:
     std::vector<uint32_t> prefix_penalty;
     uint32_t penalty = 0;
 
+    Runway() = default;
+
     Runway(size_t id, size_t estimated_size);
 
     inline size_t get_id() const { return m_id; }

@@ -9,5 +9,7 @@ ASP::ASP(Instance &instance) : m_instance(instance) {
     for (size_t i = 0; i < m_instance.get_num_flights(); ++i) {
         flights.emplace_back(i, m_instance.get_release_time(i), m_instance.get_runway_occupancy_time(i),
                              m_instance.get_delay_penalty(i));
+        flights_perturbation.emplace_back(i, m_instance.get_release_time(i), m_instance.get_runway_occupancy_time(i),
+                             m_instance.get_delay_penalty(i));                     
     }
 }
