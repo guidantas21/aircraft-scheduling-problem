@@ -18,6 +18,7 @@ private:
 
 public:
     enum class Neighborhood : uint8_t { IntraSwap, InterSwap, IntraMove, InterMove, WorstFlight };
+    enum class Perturbation : uint8_t { IntraSwap, InterSwap, IntraMove, InterMove };
     std::vector<Flight> flights;
     std::vector<Flight> flights_perturbation;
 
@@ -49,9 +50,14 @@ public:
     Solution GILS_RVND(size_t max_iterations, size_t max_ils_iterations, double alpha);        // NOLINT
 
     // Perturbations
+    void P4(Solution &solution); // NOLINT
 
     void random_inter_block_swap(Solution &solution);
     bool best_improvement_free_space(Solution &solution);
+    void intra_swap(Solution &solution);
+    void inter_swap(Solution &solution);
+    void intra_move(Solution &solution);
+    void inter_move(Solution &solution);
     
 
     ASP(Instance &instance);

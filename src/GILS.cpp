@@ -151,14 +151,15 @@ Solution ASP::GILS_RVND(const size_t max_iterations, const size_t max_ils_iterat
 
             for (size_t perturbation_iteration = 1; perturbation_iteration < max_pertubation_iters;
                  ++perturbation_iteration) {
-
-                random_inter_block_swap(solution);
+                    
+                if (ils_iteration > 400) P4(solution);
+                else random_inter_block_swap(solution);
             }
 
             RVND(solution);
 
             if (solution.objective < local_best.objective) {
-                // std::cout << "ils = " << ils_iteration << '\n';
+                std::cout << "ils = " << ils_iteration << '\n';
 
                 // local_best <= solution ////////////////////////////////////////
                     local_best.objective = solution.objective;
