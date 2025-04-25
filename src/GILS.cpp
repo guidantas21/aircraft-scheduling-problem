@@ -108,7 +108,7 @@ Solution ASP::GILS_RVND(const size_t max_iterations, const size_t max_ils_iterat
 
         std::cout << "Best found: " << best_found.objective << '\n';
 
-        Solution local_best = lowest_release_time_insertion(flights);
+        Solution local_best = rand_lowest_release_time_insertion(flights);
 
         std::cout << "\tInitial solution: " << local_best.objective << '\n';
 
@@ -152,7 +152,7 @@ Solution ASP::GILS_RVND(const size_t max_iterations, const size_t max_ils_iterat
             if (ils_iteration > 300) max_pertubation_iters += 3;
             if (ils_iteration > 600) max_pertubation_iters += 3;
 
-            for (size_t perturbation_iteration = 1; perturbation_iteration < max_pertubation_iters;
+            for (size_t perturbation_iteration = 1; perturbation_iteration <= max_pertubation_iters;
                  ++perturbation_iteration) {
                     
                 if (ils_iteration > 900) P4(solution);
