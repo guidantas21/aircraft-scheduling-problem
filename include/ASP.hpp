@@ -62,6 +62,7 @@ public:
     void inter_swap(Solution &solution);
     void intra_move(Solution &solution);
     void inter_move(Solution &solution);
+    void chain(Solution &Solution);
     
 
     ASP(Instance &instance);

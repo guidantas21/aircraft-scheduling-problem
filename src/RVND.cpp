@@ -12,20 +12,20 @@ void ASP::RVND(Solution &solution) { // NOLINT
         current_neighborhood = rand() % neighborhoods.size();
         switch (neighborhoods[current_neighborhood]) {
         case Neighborhood::IntraSwap:
-            // improved = best_improvement_intra_swap(solution);
-            improved = first_improvement_intra_swap(solution);
+            improved = best_improvement_intra_swap(solution);
+            // improved = first_improvement_intra_swap(solution);
             break;
         case Neighborhood::InterSwap:
-            // improved = best_improvement_inter_swap(solution);
-            improved = first_improvement_inter_swap(solution);
+            improved = best_improvement_inter_swap(solution);
+            // improved = first_improvement_inter_swap(solution);
             break;
         case Neighborhood::IntraMove:
-            // improved = best_improvement_intra_move(solution);
-            improved = first_improvement_intra_move(solution);
+            improved = best_improvement_intra_move(solution);
+            // improved = first_improvement_intra_move(solution);
             break;
         case Neighborhood::InterMove:
-            // improved = best_improvement_inter_move(solution);
-            improved = first_improvement_inter_move(solution);
+            improved = best_improvement_inter_move(solution);
+            // improved = first_improvement_inter_move(solution);
             break;
         }
         if (improved) {

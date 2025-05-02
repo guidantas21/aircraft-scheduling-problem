@@ -568,3 +568,105 @@ void ASP::inter_move(Solution &solution) {
 
     assert(solution.test_feasibility(m_instance));
 }
+
+void ASP::chain(Solution &solution) {
+    for (size_t i = 0; i < m_instance.get_num_runways(); ++i){
+        size_t best_runway_i = i;
+        size_t best_runway_j = (i + 1) % m_instance.get_num_runways();
+
+        size_t best_flight_i = 0;
+        size_t best_flight_j = 0;
+
+        best_flight_i = rand() % solution.runways[best_runway_i].sequence.size();
+        best_flight_j = rand() % (solution.runways[best_runway_j].sequence.size() + 1);
+
+        uint32_t original_penalty_i = solution.runways[best_runway_i].penalty;
+        uint32_t original_penalty_j = solution.runways[best_runway_j].penalty;
+
+        solution.runways[best_runway_i].sequence[best_flight_i].get().position = best_flight_j;
+        solution.runways[best_runway_i].sequence[best_flight_i].get().runway = best_runway_j;
+        solution.runways[best_runway_i].prefix_penalty.pop_back();
+        solution.runways[best_runway_j].prefix_penalty.push_back(0);
+
+        // Add to best_runway_j
+        if (best_flight_j == solution.runways[best_runway_j].sequence.size()) {
+            solution.runways[best_runway_j].sequence.push_back(solution.runways[best_runway_i].sequence[best_flight_i]);
+        } else {
+            solution.runways[best_runway_j].sequence.push_back(m_dummy_flight);
+
+            for (size_t k = solution.runways[best_runway_j].sequence.size() - 1; k > best_flight_j; k--) {
+                solution.runways[best_runway_j].sequence[k] = solution.runways[best_runway_j].sequence[k - 1];
+                solution.runways[best_runway_j].sequence[k].get().position = k;
+            }
+
+            solution.runways[best_runway_j].sequence[best_flight_j] = solution.runways[best_runway_i].sequence[best_flight_i];
+        }
+
+        // Remove from best_runway_i
+        for (size_t k = best_flight_i; k + 1 < solution.runways[best_runway_i].sequence.size(); k++) {
+            solution.runways[best_runway_i].sequence[k] = solution.runways[best_runway_i].sequence[k + 1];
+            solution.runways[best_runway_i].sequence[k].get().position = k;
+        }
+        solution.runways[best_runway_i].sequence.pop_back();
+
+        // Update prefix best_runway_i
+        if (best_flight_i == 0) {
+            Flight &current_flight = solution.runways[best_runway_i].sequence[0].get();
+            current_flight.start_time = current_flight.get_release_time();
+            solution.runways[best_runway_i].prefix_penalty[1] = 0;
+            best_flight_i++;
+        }
+
+        for (size_t i = best_flight_i; i < solution.runways[best_runway_i].sequence.size(); i++) {
+            Flight &current_flight = solution.runways[best_runway_i].sequence[i].get();
+            Flight &prev_flight = solution.runways[best_runway_i].sequence[i - 1].get();
+
+            current_flight.start_time =
+                std::max(current_flight.get_release_time(),
+                            prev_flight.start_time + prev_flight.get_runway_occupancy_time() +
+                                m_instance.get_separation_time(prev_flight.get_id(), current_flight.get_id()));
+
+            solution.runways[best_runway_i].prefix_penalty[i + 1] =
+                solution.runways[best_runway_i].prefix_penalty[i] +
+                (current_flight.start_time - current_flight.get_release_time()) * current_flight.get_delay_penalty();
+        }
+
+        // Update prefix best_runway_j
+        if (best_flight_j == 0) {
+            Flight &current_flight = solution.runways[best_runway_j].sequence[0].get();
+            current_flight.start_time = current_flight.get_release_time();
+            solution.runways[best_runway_j].prefix_penalty[1] = 0;
+            best_flight_j++;
+        }
+
+        for (size_t j = best_flight_j; j < solution.runways[best_runway_j].sequence.size(); j++) {
+            Flight &current_flight = solution.runways[best_runway_j].sequence[j].get();
+            Flight &prev_flight = solution.runways[best_runway_j].sequence[j - 1].get();
+
+            current_flight.start_time =
+                std::max(current_flight.get_release_time(),
+                            prev_flight.start_time + prev_flight.get_runway_occupancy_time() +
+                                m_instance.get_separation_time(prev_flight.get_id(), current_flight.get_id()));
+
+            solution.runways[best_runway_j].prefix_penalty[j + 1] =
+                solution.runways[best_runway_j].prefix_penalty[j] +
+                (current_flight.start_time - current_flight.get_release_time()) * current_flight.get_delay_penalty();
+        }
+
+        // Update penaltys
+        solution.runways[best_runway_i].penalty = solution.runways[best_runway_i].prefix_penalty.back();
+        solution.runways[best_runway_j].penalty = solution.runways[best_runway_j].prefix_penalty.back();
+
+        uint32_t delta = 0; 
+
+        if (solution.runways[best_runway_i].penalty + solution.runways[best_runway_j].penalty < original_penalty_i + original_penalty_j) {
+            delta = original_penalty_i + original_penalty_j - (solution.runways[best_runway_i].penalty + solution.runways[best_runway_j].penalty);
+            solution.objective -= delta;
+        } else {
+            delta = (solution.runways[best_runway_i].penalty + solution.runways[best_runway_j].penalty) - (original_penalty_i + original_penalty_j);
+            solution.objective += delta;
+        }
+    }
+
+    assert(solution.test_feasibility(m_instance));
+}

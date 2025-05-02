@@ -146,23 +146,23 @@ Solution ASP::GILS_RVND(const size_t max_iterations, const size_t max_ils_iterat
             
             // if (ils_iteration % 5 == 0) std::cout << "ils = " << ils_iteration << '\n';
 
-            auto max_pertubation_iters =
-                1 + static_cast<size_t>(std::ceil(alpha * static_cast<double>(m_instance.get_num_runways() / 2)));
+            size_t max_pertubation_iters =
+                1 /* + static_cast<size_t>(std::ceil(alpha * static_cast<double>(m_instance.get_num_runways() / 2))) */;
 
-            if (ils_iteration > 300) max_pertubation_iters += 3;
-            if (ils_iteration > 600) max_pertubation_iters += 3;
+            if (ils_iteration < 2000) max_pertubation_iters += ils_iteration / (2000 / m_instance.get_num_runways());
+            else max_pertubation_iters += (ils_iteration - 2000) / (2000 / m_instance.get_num_runways());
 
             for (size_t perturbation_iteration = 1; perturbation_iteration <= max_pertubation_iters;
                  ++perturbation_iteration) {
                     
-                if (ils_iteration > 900) P4(solution);
+                if (ils_iteration > 2000) P4(solution);
                 else random_inter_block_swap(solution);
             }
 
             RVND(solution);
 
             if (solution.objective < local_best.objective) {
-                std::cout << "ils = " << ils_iteration << '\n';
+                // std::cout << "ils = " << ils_iteration << '\n';
 
                 // local_best <= solution ////////////////////////////////////////
                     local_best.objective = solution.objective;
