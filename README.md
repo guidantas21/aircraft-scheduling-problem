@@ -1,6 +1,11 @@
 # Airport Scheduling Problem (ASP)
 
-Solving the Airport Scheduling Problem (ASP) with independent runways.
+This project solves the Airport Scheduling Problem (ASP) with independent runways, focusing on optimizing aircraft scheduling to improve efficiency and minimize conflicts.
+
+🏆 Winner of the Copa APA 2024.2 (Team "Prova Surpesa (01/04)")
+A competition held between 27 undergraduate students from the Computer Science Center of the Federal University of Paraíba (CI/UFPB), where our algorithm won 1st place!
+
+![Competition Ranking](./docs/ranking.png)
 
 ## TODO
 
@@ -8,8 +13,8 @@ Solving the Airport Scheduling Problem (ASP) with independent runways.
 - [x] Feasibility check
 - [x] Constructive procedure
 - [x] Local search
-- [ ] Perturbation
-- [ ] Methaheuristic
+- [x] Perturbation
+- [x] Methaheuristic
 
 ## Methaheuristics
 
@@ -18,13 +23,13 @@ Solving the Airport Scheduling Problem (ASP) with independent runways.
 
 ## Constructive procedure
 
-- [ ] Cheapest Insertion
-- [ ] Other
+- [x] Cheapest Insertion
+- [x] Other
 
 ## Local search
 
 - [x] VND (Variable Neighborhood Search) [MANDATORY]
-- [ ] RVND (Randomized Variable Neighborhood Search)
+- [x] RVND (Randomized Variable Neighborhood Search)
 
 ### Neighborhood
 
@@ -35,7 +40,7 @@ Solving the Airport Scheduling Problem (ASP) with independent runways.
 
 ### Perturbation
 
-- [] RANDOM-INTER-SWAP: swap two random blocks of flights in different runways 
+- [x] RANDOM-INTER-SWAP: swap two random blocks of flights in different runways 
 
 ## Getting started
 
